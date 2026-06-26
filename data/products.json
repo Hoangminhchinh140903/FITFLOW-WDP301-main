@@ -1,0 +1,795 @@
+[
+  {
+    "_id": "a5be7d321ab5a77db2864790",
+    "__v": 0,
+    "averageRating": 4.224560611054728,
+    "baseRentPrice": 180000,
+    "baseSalePrice": 5200000,
+    "buyoutValue": 0,
+    "category": "Tennis",
+    "categoryPath": {
+      "parent": "Tennis",
+      "child": "",
+      "ancestors": [
+        "Tennis"
+      ]
+    },
+    "color": "Nâu",
+    "colorVariants": [
+      {
+        "name": "Nâu",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 180000,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Huyền thoại điều khiển chính xác, vợt của các tay vợt hàng đầu.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876051/fitflow/products/owner_product_1781876047265_0.jpg"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Wilson Pro Staff v14",
+    "pricingMode": "common",
+    "reviewCount": 15,
+    "size": "G2",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:34:11.242Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 5
+  },
+  {
+    "_id": "45bbc3756bf3656203c365f8",
+    "__v": 0,
+    "averageRating": 4.6664790048006735,
+    "baseRentPrice": 150000,
+    "baseSalePrice": 4600000,
+    "buyoutValue": 0,
+    "category": "Tennis",
+    "categoryPath": {
+      "parent": "Tennis",
+      "child": "",
+      "ancestors": [
+        "Tennis"
+      ]
+    },
+    "color": "Trắng/Đen",
+    "colorVariants": [
+      {
+        "name": "Trắng/Đen",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 150000,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Vợt cân bằng giữa sức mạnh và kiểm soát, lý tưởng cho tốc độ vung vợt nhanh.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876083/fitflow/products/owner_product_1781876081513_0.webp"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Head Speed MP 2024",
+    "pricingMode": "common",
+    "reviewCount": 15,
+    "size": "G2",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:34:43.824Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 5
+  },
+  {
+    "_id": "d245e481d03e01a38d0a8147",
+    "__v": 0,
+    "averageRating": 4.967610121686009,
+    "baseRentPrice": 160000,
+    "baseSalePrice": 4900000,
+    "buyoutValue": 0,
+    "category": "Tennis",
+    "categoryPath": {
+      "parent": "Tennis",
+      "child": "",
+      "ancestors": [
+        "Tennis"
+      ]
+    },
+    "color": "Xanh Da Trời",
+    "colorVariants": [
+      {
+        "name": "Xanh Da Trời",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 160000,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Sweet spot lớn, cho lực đánh mạnh mẽ và cảm giác thoải mái.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876106/fitflow/products/owner_product_1781876102019_0.jpg"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Yonex EZONE 98",
+    "pricingMode": "common",
+    "reviewCount": 16,
+    "size": "G2",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:35:06.045Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 5
+  },
+  {
+    "_id": "c4bd3bc13026dbaade2f35af",
+    "__v": 0,
+    "averageRating": 4.288065219481745,
+    "baseRentPrice": 100000,
+    "baseSalePrice": 3800000,
+    "buyoutValue": 0,
+    "category": "Badminton",
+    "categoryPath": {
+      "parent": "Badminton",
+      "child": "",
+      "ancestors": [
+        "Badminton"
+      ]
+    },
+    "color": "Trắng hổ",
+    "colorVariants": [
+      {
+        "name": "Trắng hổ",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 100000,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Vợt cầu lông thiên công mạnh mẽ, đập cầu uy lực.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876123/fitflow/products/owner_product_1781876121373_0.webp"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Yonex Astrox 99 Pro",
+    "pricingMode": "common",
+    "reviewCount": 5,
+    "size": "3U/G5",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:35:23.516Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 5
+  },
+  {
+    "_id": "844dcd989384911038200d6e",
+    "__v": 0,
+    "averageRating": 4.1543754285495345,
+    "baseRentPrice": 120000,
+    "baseSalePrice": 4200000,
+    "buyoutValue": 0,
+    "category": "Badminton",
+    "categoryPath": {
+      "parent": "Badminton",
+      "child": "",
+      "ancestors": [
+        "Badminton"
+      ]
+    },
+    "color": "Vàng",
+    "colorVariants": [
+      {
+        "name": "Vàng",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 120000,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Tốc độ vung vợt nhanh nhất, phản tạt cực bén.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876140/fitflow/products/owner_product_1781876139040_0.webp"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Yonex Nanoflare 1000Z",
+    "pricingMode": "common",
+    "reviewCount": 16,
+    "size": "3U/G5",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:35:40.991Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 5
+  },
+  {
+    "_id": "1928c31bb8613f7cb221c415",
+    "__v": 0,
+    "averageRating": 4.645419524530003,
+    "baseRentPrice": 100000,
+    "baseSalePrice": 3600000,
+    "buyoutValue": 0,
+    "category": "Badminton",
+    "categoryPath": {
+      "parent": "Badminton",
+      "child": "",
+      "ancestors": [
+        "Badminton"
+      ]
+    },
+    "color": "Đen/Tím",
+    "colorVariants": [
+      {
+        "name": "Đen/Tím",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 100000,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Vợt tấn công với thiết kế mạnh mẽ, rồng Ryuga.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876160/fitflow/products/owner_product_1781876157418_0.webp"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Victor Thruster Ryuga II",
+    "pricingMode": "common",
+    "reviewCount": 17,
+    "size": "3U/G5",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:36:00.251Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 5
+  },
+  {
+    "_id": "0c79110e12b0ad6b01344e26",
+    "__v": 0,
+    "averageRating": 4.234518918420686,
+    "baseRentPrice": 90000,
+    "baseSalePrice": 3500000,
+    "buyoutValue": 0,
+    "category": "Badminton",
+    "categoryPath": {
+      "parent": "Badminton",
+      "child": "",
+      "ancestors": [
+        "Badminton"
+      ]
+    },
+    "color": "Trắng/Hồng",
+    "colorVariants": [
+      {
+        "name": "Trắng/Hồng",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 90000,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Sức mạnh bùng nổ, dành cho người chơi có lực tay tốt.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876190/fitflow/products/owner_product_1781876185733_0.webp"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Li-Ning Axforce 80",
+    "pricingMode": "common",
+    "reviewCount": 13,
+    "size": "3U/G5",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:36:30.181Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 5
+  },
+  {
+    "_id": "4783a6dcfd8304a1a444ab3b",
+    "__v": 0,
+    "averageRating": 4.869256550647478,
+    "baseRentPrice": 150000,
+    "baseSalePrice": 6000000,
+    "buyoutValue": 0,
+    "category": "Pickleball",
+    "categoryPath": {
+      "parent": "Pickleball",
+      "child": "",
+      "ancestors": [
+        "Pickleball"
+      ]
+    },
+    "color": "Đen",
+    "colorVariants": [
+      {
+        "name": "Đen",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 150000,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Vợt Pickleball cao cấp nhất, thiết kế riêng cho Ben Johns.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876212/fitflow/products/owner_product_1781876208756_0.jpg"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Joola Ben Johns Perseus CFS 16",
+    "pricingMode": "common",
+    "reviewCount": 4,
+    "size": "Standard",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:36:52.853Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 5
+  },
+  {
+    "_id": "198823092132a9affd2ac124",
+    "__v": 0,
+    "averageRating": 4.449470980010784,
+    "baseRentPrice": 150000,
+    "baseSalePrice": 5800000,
+    "buyoutValue": 0,
+    "category": "Pickleball",
+    "categoryPath": {
+      "parent": "Pickleball",
+      "child": "",
+      "ancestors": [
+        "Pickleball"
+      ]
+    },
+    "color": "Đỏ",
+    "colorVariants": [
+      {
+        "name": "Đỏ",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 150000,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Lỗ khí động học, tăng tối đa tốc độ vung vợt và độ xoáy.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876228/fitflow/products/owner_product_1781876226104_0.jpg"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Selkirk Vanguard Power Air Invikta",
+    "pricingMode": "common",
+    "reviewCount": 20,
+    "size": "Standard",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:37:09.093Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 5
+  },
+  {
+    "_id": "89810ffc9950136d58a73c14",
+    "__v": 0,
+    "averageRating": 4.913635481258695,
+    "baseRentPrice": 120000,
+    "baseSalePrice": 5500000,
+    "buyoutValue": 0,
+    "category": "Pickleball",
+    "categoryPath": {
+      "parent": "Pickleball",
+      "child": "",
+      "ancestors": [
+        "Pickleball"
+      ]
+    },
+    "color": "Đen/Xanh",
+    "colorVariants": [
+      {
+        "name": "Đen/Xanh",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 120000,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Sự kết hợp hoàn hảo giữa độ nhám, kiểm soát và sức mạnh.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876253/fitflow/products/owner_product_1781876250762_0.jpg"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Engage Pursuit Pro EX",
+    "pricingMode": "common",
+    "reviewCount": 18,
+    "size": "Standard",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:37:33.887Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 5
+  },
+  {
+    "_id": "ca2ed2d2b5fba8de858d3b67",
+    "__v": 1,
+    "averageRating": 4.063210139399027,
+    "baseRentPrice": 0,
+    "baseSalePrice": 550000,
+    "buyoutValue": 0,
+    "category": "Apparel",
+    "categoryPath": {
+      "parent": "Apparel",
+      "child": "",
+      "ancestors": [
+        "Apparel"
+      ]
+    },
+    "color": "Đỏ",
+    "colorVariants": [
+      {
+        "name": "Đỏ",
+        "images": [
+          "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874297/fitflow/products/owner_product_1781874294020_0.jpg",
+          "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874300/fitflow/products/owner_product_1781874294060_1.jpg",
+          "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874297/fitflow/products/owner_product_1781874294062_2.jpg",
+          "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874297/fitflow/products/owner_product_1781874294062_3.jpg"
+        ]
+      }
+    ],
+    "commonRentPrice": 0,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Áo thể thao Yonex thấm hút mồ hôi cực tốt, công nghệ làm mát VeryCool.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874297/fitflow/products/owner_product_1781874294020_0.jpg",
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874300/fitflow/products/owner_product_1781874294060_1.jpg",
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874297/fitflow/products/owner_product_1781874294062_2.jpg",
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874297/fitflow/products/owner_product_1781874294062_3.jpg",
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874297/fitflow/products/owner_product_1781874294020_0.jpg",
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874300/fitflow/products/owner_product_1781874294060_1.jpg",
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874297/fitflow/products/owner_product_1781874294062_2.jpg",
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781874297/fitflow/products/owner_product_1781874294062_3.jpg"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Yonex Dry T-Shirt 10506",
+    "pricingMode": "common",
+    "reviewCount": 14,
+    "size": "M",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:28:49.578Z",
+    "variantMatrix": [],
+    "hasSizes": true,
+    "quantity": 10
+  },
+  {
+    "_id": "3a6f79ee219feaaf07665d0c",
+    "__v": 1,
+    "averageRating": 4.608399463526227,
+    "baseRentPrice": 0,
+    "baseSalePrice": 1200000,
+    "buyoutValue": 0,
+    "category": "Apparel",
+    "categoryPath": {
+      "parent": "Apparel",
+      "child": "",
+      "ancestors": [
+        "Apparel"
+      ]
+    },
+    "color": "Xanh",
+    "colorVariants": [
+      {
+        "name": "Xanh",
+        "images": [
+          "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781875356/fitflow/products/owner_product_1781875349053_0.webp"
+        ]
+      }
+    ],
+    "commonRentPrice": 0,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Áo tennis Nike cao cấp, siêu nhẹ và thoáng khí.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781875356/fitflow/products/owner_product_1781875349053_0.webp"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Nike Court Dri-FIT ADV",
+    "pricingMode": "common",
+    "reviewCount": 10,
+    "size": "S",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:27:09.622Z",
+    "variantMatrix": [],
+    "hasSizes": true,
+    "quantity": 10
+  },
+  {
+    "_id": "d6083390d0653d912f782dc3",
+    "__v": 0,
+    "averageRating": 4.2212247471331725,
+    "baseRentPrice": 0,
+    "baseSalePrice": 850000,
+    "buyoutValue": 0,
+    "category": "Apparel",
+    "categoryPath": {
+      "parent": "Apparel",
+      "child": "",
+      "ancestors": [
+        "Apparel"
+      ]
+    },
+    "color": "Đen",
+    "colorVariants": [
+      {
+        "name": "Đen",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 0,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Quần đùi tennis co giãn 4 chiều, thoải mái vận động.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781875879/fitflow/products/owner_product_1781875874831_0.webp"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Adidas Tennis Club Shorts",
+    "pricingMode": "common",
+    "reviewCount": 14,
+    "size": "M",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:31:19.908Z",
+    "variantMatrix": [],
+    "hasSizes": true,
+    "quantity": 10
+  },
+  {
+    "_id": "eddd0492522d9e1a0199f139",
+    "__v": 0,
+    "averageRating": 4.204983468467305,
+    "baseRentPrice": 0,
+    "baseSalePrice": 2600000,
+    "buyoutValue": 0,
+    "category": "Apparel",
+    "categoryPath": {
+      "parent": "Apparel",
+      "child": "",
+      "ancestors": [
+        "Apparel"
+      ]
+    },
+    "color": "Trắng",
+    "colorVariants": [
+      {
+        "name": "Trắng",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 0,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Giày cầu lông chuyên nghiệp, đệm khí êm ái, bám sân cực tốt.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781875909/fitflow/products/owner_product_1781875903927_0.webp"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Yonex Power Cushion 65Z3",
+    "pricingMode": "common",
+    "reviewCount": 19,
+    "size": "40",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:31:49.546Z",
+    "variantMatrix": [],
+    "hasSizes": true,
+    "quantity": 10
+  },
+  {
+    "_id": "16769dd5649fc2ba626735ab",
+    "__v": 0,
+    "averageRating": 4.482046696434238,
+    "baseRentPrice": 0,
+    "baseSalePrice": 2800000,
+    "buyoutValue": 0,
+    "category": "Apparel",
+    "categoryPath": {
+      "parent": "Apparel",
+      "child": "",
+      "ancestors": [
+        "Apparel"
+      ]
+    },
+    "color": "Đỏ/Đen",
+    "colorVariants": [
+      {
+        "name": "Đỏ/Đen",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 0,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Giày thể thao form rộng phù hợp bàn chân bè, siêu bám sân.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781875928/fitflow/products/owner_product_1781875925526_0.jpg"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Mizuno Wave Claw 3",
+    "pricingMode": "common",
+    "reviewCount": 20,
+    "size": "40",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:32:08.638Z",
+    "variantMatrix": [],
+    "hasSizes": true,
+    "quantity": 10
+  },
+  {
+    "_id": "e61d1add64ad764d3536a273",
+    "__v": 0,
+    "averageRating": 4.762382544221812,
+    "baseRentPrice": 0,
+    "baseSalePrice": 180000,
+    "buyoutValue": 0,
+    "category": "Accessories",
+    "categoryPath": {
+      "parent": "Accessories",
+      "child": "",
+      "ancestors": [
+        "Accessories"
+      ]
+    },
+    "color": "Trắng",
+    "colorVariants": [
+      {
+        "name": "Trắng",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 0,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Dây đan vợt cầu lông trợ lực tốt nhất, tiếng nổ to.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781875955/fitflow/products/owner_product_1781875947332_0.webp"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Yonex BG66 Ultimax String",
+    "pricingMode": "common",
+    "reviewCount": 13,
+    "size": "Standard",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:32:35.379Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 10
+  },
+  {
+    "_id": "e44154627409aa3cc3dfc3a5",
+    "__v": 0,
+    "averageRating": 4.412233501828846,
+    "baseRentPrice": 0,
+    "baseSalePrice": 150000,
+    "buyoutValue": 0,
+    "category": "Accessories",
+    "categoryPath": {
+      "parent": "Accessories",
+      "child": "",
+      "ancestors": [
+        "Accessories"
+      ]
+    },
+    "color": "Trắng",
+    "colorVariants": [
+      {
+        "name": "Trắng",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 0,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Quấn cán vợt tennis/cầu lông mỏng, bám tay, thấm mồ hôi.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876064/fitflow/products/owner_product_1781876060803_0.jpg"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Wilson Pro Overgrip (Pack of 3)",
+    "pricingMode": "common",
+    "reviewCount": 10,
+    "size": "Standard",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:34:23.988Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 10
+  },
+  {
+    "_id": "2aec75e98a2f20f2da1c031b",
+    "__v": 0,
+    "averageRating": 4.988564840285649,
+    "baseRentPrice": 0,
+    "baseSalePrice": 180000,
+    "buyoutValue": 0,
+    "category": "Accessories",
+    "categoryPath": {
+      "parent": "Accessories",
+      "child": "",
+      "ancestors": [
+        "Accessories"
+      ]
+    },
+    "color": "Vàng",
+    "colorVariants": [
+      {
+        "name": "Vàng",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 0,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Bóng tennis tiêu chuẩn thi đấu, bền bỉ và nảy chuẩn.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781875997/fitflow/products/owner_product_1781875995205_0.jpg"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Dunlop Fort All Court Balls (Can of 4)",
+    "pricingMode": "common",
+    "reviewCount": 18,
+    "size": "Standard",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:33:17.304Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 10
+  },
+  {
+    "_id": "fed8832620c1f7eaa477ff0f",
+    "__v": 0,
+    "averageRating": 4.705616523838941,
+    "baseRentPrice": 0,
+    "baseSalePrice": 580000,
+    "buyoutValue": 0,
+    "category": "Accessories",
+    "categoryPath": {
+      "parent": "Accessories",
+      "child": "",
+      "ancestors": [
+        "Accessories"
+      ]
+    },
+    "color": "Trắng",
+    "colorVariants": [
+      {
+        "name": "Trắng",
+        "images": []
+      }
+    ],
+    "commonRentPrice": 0,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "depositAmount": 0,
+    "description": "Ống cầu lông lông ngỗng chất lượng cao, bay ổn định.",
+    "images": [
+      "https://res.cloudinary.com/dgmcfghuz/image/upload/v1781876025/fitflow/products/owner_product_1781876020957_0.webp"
+    ],
+    "isDraft": false,
+    "likeCount": 0,
+    "name": "Yonex Aerosensa 20 Shuttlecocks",
+    "pricingMode": "common",
+    "reviewCount": 11,
+    "size": "Speed 76",
+    "sizes": [],
+    "updatedAt": "2026-06-19T13:33:45.463Z",
+    "variantMatrix": [],
+    "hasSizes": false,
+    "quantity": 10
+  }
+]

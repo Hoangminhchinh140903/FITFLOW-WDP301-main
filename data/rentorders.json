@@ -1,0 +1,17 @@
+[
+  {
+    "_id": "65f000000000000000000301",
+    "customerId": "65f000000000000000000003",
+    "staffId": "65f000000000000000000002",
+    "status": "Deposited",
+    "rentStartDate": "2026-03-02T00:00:00.000Z",
+    "rentEndDate": "2026-03-04T00:00:00.000Z",
+    "depositAmount": 300000,
+    "remainingAmount": 400000,
+    "damageFee": 0,
+    "totalAmount": 700000,
+    "createdAt": "2026-02-27T09:30:00.000Z",
+    "updatedAt": "2026-02-28T09:30:00.000Z",
+    "__v": 0
+  }
+]

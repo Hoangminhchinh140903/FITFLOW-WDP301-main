@@ -1,0 +1,13 @@
+[
+  {
+    "_id": "6a37d96de4cca143d55eee96",
+    "token": "test1234",
+    "method": "email",
+    "target": "test@example.com",
+    "otp": "123456",
+    "expiresAt": "2026-06-21T12:47:17.287Z",
+    "verifiedAt": "2026-06-21T12:30:37.287Z",
+    "isUsed": false,
+    "createdAt": "2026-06-21T12:30:37.287Z"
+  }
+]

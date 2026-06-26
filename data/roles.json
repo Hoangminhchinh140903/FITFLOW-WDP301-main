@@ -1,0 +1,75 @@
+[
+  {
+    "_id": "6a33e1f2d65ea07b85c9d3ec",
+    "name": "customer",
+    "__v": 0,
+    "createdAt": "2026-06-18T12:17:54.422Z",
+    "inherits": [],
+    "isSystem": true,
+    "level": 0,
+    "permissions": [
+      "VIEW_POST"
+    ],
+    "updatedAt": "2026-06-22T12:21:57.516Z"
+  },
+  {
+    "_id": "6a33e1f2d65ea07b85c9d3ed",
+    "name": "staff",
+    "__v": 0,
+    "createdAt": "2026-06-18T12:17:54.422Z",
+    "inherits": [
+      "customer"
+    ],
+    "isSystem": true,
+    "level": 10,
+    "permissions": [
+      "orders_rent.order.read",
+      "orders_rent.order.list",
+      "orders_rent.order.confirm",
+      "orders_rent.order.finalize",
+      "orders_rent.pickup.complete",
+      "orders_rent.return.process",
+      "orders_rent.return.finalize",
+      "orders_rent.penalty.read",
+      "orders_rent.no_show.mark",
+      "orders_rent.washing.complete",
+      "inventory.item.read",
+      "inventory.item.update",
+      "inventory.item.update_condition",
+      "inventory.item.update_lifecycle",
+      "customers.contact.read_masked",
+      "customers.contact.read_full",
+      "CREATE_POST",
+      "UPDATE_POST",
+      "DELETE_POST",
+      "SUBMIT_POST",
+      "VIEW_POST"
+    ],
+    "updatedAt": "2026-06-22T12:21:57.517Z"
+  },
+  {
+    "_id": "6a33e1f2d65ea07b85c9d3ee",
+    "name": "owner",
+    "__v": 0,
+    "createdAt": "2026-06-18T12:17:54.422Z",
+    "inherits": [
+      "staff"
+    ],
+    "isSystem": true,
+    "level": 20,
+    "permissions": [
+      "orders_rent.deposit.read",
+      "orders_rent.deposit.confirm",
+      "orders_rent.deposit.refund",
+      "orders_rent.deposit.forfeit",
+      "orders_rent.penalty.apply",
+      "analytics.revenue.read",
+      "customers.contact.read_full",
+      "inventory.item.create",
+      "inventory.item.delete",
+      "APPROVE_POST",
+      "PUBLISH_POST"
+    ],
+    "updatedAt": "2026-06-22T12:21:57.517Z"
+  }
+]

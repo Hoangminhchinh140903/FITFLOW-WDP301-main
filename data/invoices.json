@@ -1,0 +1,102 @@
+[
+  {
+    "_id": "6a37ce51d65ea07b85c9d3ef",
+    "orderRefId": "6a37ce4f768efe12932bd95c",
+    "orderRefModel": "SaleOrder",
+    "purpose": "SalePayment",
+    "__v": 0,
+    "amounts": {
+      "subtotal": 3120000,
+      "discountAmount": 0,
+      "shippingFee": 0,
+      "totalAmount": 3120000
+    },
+    "buyer": {
+      "name": "Hoàng Minh",
+      "email": "hmc14090307@gmail.com",
+      "phone": "0932165784",
+      "address": "FPT Uni, Xã Thạch Hoà, Huyện Thạch Thất, Thành phố Hà Nội"
+    },
+    "cancelledAt": null,
+    "createdAt": "2026-06-21T11:43:13.102Z",
+    "documentTitle": "PHIẾU XÁC NHẬN ĐƠN MUA",
+    "documentTypeLabel": "Đơn mua",
+    "emailError": "Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-2c799749cb3sm1053795ad.72 - gsmtp",
+    "emailSentAt": null,
+    "emailStatus": "failed",
+    "emailTo": "hmc14090307@gmail.com",
+    "errorMessage": "",
+    "invoiceId": "MOCK-932BD95C-1782042192938",
+    "invoiceNo": "20260621-192938",
+    "issuedAt": "2026-06-21T11:43:13.102Z",
+    "items": [
+      {
+        "name": "Wilson Pro Staff v14",
+        "quantity": 1,
+        "unitPrice": 3120000,
+        "lineTotal": 3120000
+      }
+    ],
+    "metadata": {
+      "orderCode": "#932BD95C",
+      "source": "postPaymentInvoice.service"
+    },
+    "orderType": "Buy",
+    "paymentMethod": "COD",
+    "pdfUrl": "",
+    "provider": "stub",
+    "status": "issued",
+    "updatedAt": "2026-06-21T11:43:14.829Z",
+    "xmlUrl": ""
+  },
+  {
+    "_id": "6a37db2bd65ea07b85c9d3f0",
+    "purpose": "SalePayment",
+    "orderRefModel": "SaleOrder",
+    "orderRefId": "6a37db29a60e93f84e1e7c10",
+    "__v": 0,
+    "amounts": {
+      "subtotal": 2600000,
+      "discountAmount": 0,
+      "shippingFee": 0,
+      "totalAmount": 2600000
+    },
+    "buyer": {
+      "name": "Hoàng Minh",
+      "email": "hmc14090307@gmail.com",
+      "phone": "0932165784",
+      "address": "FPT University, Xã Thạch Hoà, Huyện Thạch Thất, Thành phố Hà Nội"
+    },
+    "cancelledAt": null,
+    "createdAt": "2026-06-21T12:38:03.314Z",
+    "documentTitle": "PHIẾU XÁC NHẬN ĐƠN MUA",
+    "documentTypeLabel": "Đơn mua",
+    "emailError": "Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-84564d68edasm4363326b3a.1 - gsmtp",
+    "emailSentAt": null,
+    "emailStatus": "failed",
+    "emailTo": "hmc14090307@gmail.com",
+    "errorMessage": "",
+    "invoiceId": "MOCK-4E1E7C10-1782045483159",
+    "invoiceNo": "20260621-483159",
+    "issuedAt": "2026-06-21T12:38:03.313Z",
+    "items": [
+      {
+        "name": "Yonex Power Cushion 65Z3",
+        "quantity": 1,
+        "unitPrice": 2600000,
+        "lineTotal": 2600000
+      }
+    ],
+    "metadata": {
+      "orderCode": "#4E1E7C10",
+      "source": "postPaymentInvoice.service"
+    },
+    "orderType": "Buy",
+    "paymentMethod": "COD",
+    "pdfUrl": "",
+    "provider": "stub",
+    "status": "issued",
+    "updatedAt": "2026-06-21T12:38:05.632Z",
+    "xmlUrl": ""
+  }
+]

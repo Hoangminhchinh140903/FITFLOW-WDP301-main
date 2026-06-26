@@ -1,0 +1,15 @@
+[
+  {
+    "_id": "65f000000000000000000601",
+    "orderId": "65f000000000000000000301",
+    "type": "CCCD",
+    "documentNumber": "079123456789",
+    "documentImageUrl": "https://example.com/collateral/cccd.jpg",
+    "receiveAt": "2026-02-28T06:30:00.000Z",
+    "returnedAt": null,
+    "status": null,
+    "createdAt": "2026-02-28T06:30:00.000Z",
+    "updatedAt": "2026-02-28T06:30:00.000Z",
+    "__v": 0
+  }
+]

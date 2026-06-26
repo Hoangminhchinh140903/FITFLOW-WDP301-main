@@ -1,0 +1,1037 @@
+[
+  {
+    "_id": "65f000000000000000001101",
+    "type": "PickupSoon",
+    "targetType": "RentOrder",
+    "targetId": "65f000000000000000000301",
+    "status": "Seen",
+    "createdAt": "2026-02-28T07:30:00.000Z",
+    "updatedAt": "2026-06-19T05:51:17.083Z",
+    "__v": 0,
+    "activityLogs": [
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-19T05:51:17.083Z"
+      }
+    ],
+    "handledAt": "2026-06-19T05:51:17.083Z",
+    "handledBy": "6a34d194b88051d5d9dc6941"
+  },
+  {
+    "_id": "65f000000000000000001102",
+    "type": "New",
+    "targetType": "SaleOrder",
+    "targetId": "65f000000000000000000801",
+    "status": "Seen",
+    "createdAt": "2026-02-26T09:30:00.000Z",
+    "updatedAt": "2026-02-27T09:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3541ad365881a098b470b9",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "6ae3cff9fbcf857067e87432",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Test còn 0 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:6ae3cff9fbcf857067e87432",
+    "data": {
+      "productId": "6ae3cff9fbcf857067e87432",
+      "totalQuantity": 0,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:18:37.258Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:18:37.263Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a354553fd0a9c0b7c524bea",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "a5be7d321ab5a77db2864790",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Wilson Pro Staff v14 còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:a5be7d321ab5a77db2864790",
+    "data": {
+      "productId": "a5be7d321ab5a77db2864790",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:34:11.254Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:34:11.258Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a354573fd0a9c0b7c524c2c",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "45bbc3756bf3656203c365f8",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Head Speed MP 2024 còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:45bbc3756bf3656203c365f8",
+    "data": {
+      "productId": "45bbc3756bf3656203c365f8",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:34:43.835Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:34:43.835Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a35458afd0a9c0b7c524c52",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "d245e481d03e01a38d0a8147",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Yonex EZONE 98 còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:d245e481d03e01a38d0a8147",
+    "data": {
+      "productId": "d245e481d03e01a38d0a8147",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:35:06.055Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:35:06.056Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a35459bfd0a9c0b7c524c75",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "c4bd3bc13026dbaade2f35af",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Yonex Astrox 99 Pro còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:c4bd3bc13026dbaade2f35af",
+    "data": {
+      "productId": "c4bd3bc13026dbaade2f35af",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:35:23.525Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:35:23.526Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3545acfd0a9c0b7c524c98",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "844dcd989384911038200d6e",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Yonex Nanoflare 1000Z còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:844dcd989384911038200d6e",
+    "data": {
+      "productId": "844dcd989384911038200d6e",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:35:40.999Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:35:40.999Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3545c0fd0a9c0b7c524cbe",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "1928c31bb8613f7cb221c415",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Victor Thruster Ryuga II còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:1928c31bb8613f7cb221c415",
+    "data": {
+      "productId": "1928c31bb8613f7cb221c415",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:36:00.260Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:36:00.261Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3545defd0a9c0b7c524ce1",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "0c79110e12b0ad6b01344e26",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Li-Ning Axforce 80 còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:0c79110e12b0ad6b01344e26",
+    "data": {
+      "productId": "0c79110e12b0ad6b01344e26",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:36:30.190Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:36:30.191Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3545f4fd0a9c0b7c524d04",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "4783a6dcfd8304a1a444ab3b",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Joola Ben Johns Perseus CFS 16 còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:4783a6dcfd8304a1a444ab3b",
+    "data": {
+      "productId": "4783a6dcfd8304a1a444ab3b",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:36:52.863Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:36:52.864Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a354605fd0a9c0b7c524d2b",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "198823092132a9affd2ac124",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Selkirk Vanguard Power Air Invikta còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:198823092132a9affd2ac124",
+    "data": {
+      "productId": "198823092132a9affd2ac124",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:37:09.102Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:37:09.102Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a35461dfd0a9c0b7c524d4e",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "89810ffc9950136d58a73c14",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Engage Pursuit Pro EX còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:89810ffc9950136d58a73c14",
+    "data": {
+      "productId": "89810ffc9950136d58a73c14",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-19T13:37:33.896Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-19T13:37:33.896Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37ce50768efe12932bd968",
+    "type": "OrderNew",
+    "targetType": "SaleOrder",
+    "targetId": "6a37ce4f768efe12932bd95c",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Đơn bán mới #6a37ce4f768efe12932bd95c cần xử lý",
+    "title": "Đơn mới",
+    "groupKey": "sale-order-new:6a37ce4f768efe12932bd95c",
+    "data": {
+      "orderId": "6a37ce4f768efe12932bd95c",
+      "orderType": "sale"
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T11:43:12.916Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-21T11:43:12.917Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37ce50768efe12932bd96b",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "a5be7d321ab5a77db2864790",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Wilson Pro Staff v14 còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:a5be7d321ab5a77db2864790",
+    "data": {
+      "productId": "a5be7d321ab5a77db2864790",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T11:43:12.920Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-21T11:43:12.921Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37db2ba60e93f84e1e7c1c",
+    "type": "OrderNew",
+    "targetType": "SaleOrder",
+    "targetId": "6a37db29a60e93f84e1e7c10",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Đơn bán mới #6a37db29a60e93f84e1e7c10 cần xử lý",
+    "title": "Đơn mới",
+    "groupKey": "sale-order-new:6a37db29a60e93f84e1e7c10",
+    "data": {
+      "orderId": "6a37db29a60e93f84e1e7c10",
+      "orderType": "sale"
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T12:38:03.138Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-21T12:38:03.139Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37db41a60e93f84e1e7c57",
+    "type": "OrderNew",
+    "targetType": "SaleOrder",
+    "targetId": "6a37db3fa60e93f84e1e7c4b",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Đơn bán mới #6a37db3fa60e93f84e1e7c4b cần xử lý",
+    "title": "Đơn mới",
+    "groupKey": "sale-order-new:6a37db3fa60e93f84e1e7c4b",
+    "data": {
+      "orderId": "6a37db3fa60e93f84e1e7c4b",
+      "orderType": "sale"
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T12:38:25.182Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-21T12:38:25.183Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37dd29cad20ece37bfe6ef",
+    "type": "OrderNew",
+    "targetType": "SaleOrder",
+    "targetId": "6a37dd26cad20ece37bfe6e0",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Đơn bán mới #6a37dd26cad20ece37bfe6e0 cần xử lý",
+    "title": "Đơn mới",
+    "groupKey": "sale-order-new:6a37dd26cad20ece37bfe6e0",
+    "data": {
+      "orderId": "6a37dd26cad20ece37bfe6e0",
+      "orderType": "sale"
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T12:46:33.137Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-21T12:46:33.138Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37dd44cad20ece37bfe733",
+    "type": "OrderCancelled",
+    "targetType": "SaleOrder",
+    "targetId": "6a37dd26cad20ece37bfe6e0",
+    "status": "Seen",
+    "priority": "MEDIUM",
+    "message": "Đơn bán #6a37dd26cad20ece37bfe6e0 đã bị hủy (customer_cancel)",
+    "title": "Đơn hủy",
+    "groupKey": "sale-order-cancelled:6a37dd26cad20ece37bfe6e0",
+    "data": {
+      "orderId": "6a37dd26cad20ece37bfe6e0",
+      "reason": "customer_cancel"
+    },
+    "expiresAt": null,
+    "actionRequired": false,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T12:47:00.727Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-21T12:47:00.728Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37dd48cad20ece37bfe75b",
+    "type": "OrderCancelled",
+    "targetType": "SaleOrder",
+    "targetId": "6a37db3fa60e93f84e1e7c4b",
+    "status": "Seen",
+    "priority": "MEDIUM",
+    "message": "Đơn bán #6a37db3fa60e93f84e1e7c4b đã bị hủy (customer_cancel)",
+    "title": "Đơn hủy",
+    "groupKey": "sale-order-cancelled:6a37db3fa60e93f84e1e7c4b",
+    "data": {
+      "orderId": "6a37db3fa60e93f84e1e7c4b",
+      "reason": "customer_cancel"
+    },
+    "expiresAt": null,
+    "actionRequired": false,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T12:47:04.390Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-21T12:47:04.391Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37dd4ccad20ece37bfe783",
+    "type": "OrderCancelled",
+    "targetType": "SaleOrder",
+    "targetId": "6a37db29a60e93f84e1e7c10",
+    "status": "Seen",
+    "priority": "MEDIUM",
+    "message": "Đơn bán #6a37db29a60e93f84e1e7c10 đã bị hủy (customer_cancel)",
+    "title": "Đơn hủy",
+    "groupKey": "sale-order-cancelled:6a37db29a60e93f84e1e7c10",
+    "data": {
+      "orderId": "6a37db29a60e93f84e1e7c10",
+      "reason": "customer_cancel"
+    },
+    "expiresAt": null,
+    "actionRequired": false,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T12:47:08.302Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-21T12:47:08.303Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37dd50cad20ece37bfe7ab",
+    "type": "OrderCancelled",
+    "targetType": "SaleOrder",
+    "targetId": "6a37ce4f768efe12932bd95c",
+    "status": "Seen",
+    "priority": "MEDIUM",
+    "message": "Đơn bán #6a37ce4f768efe12932bd95c đã bị hủy (customer_cancel)",
+    "title": "Đơn hủy",
+    "groupKey": "sale-order-cancelled:6a37ce4f768efe12932bd95c",
+    "data": {
+      "orderId": "6a37ce4f768efe12932bd95c",
+      "reason": "customer_cancel"
+    },
+    "expiresAt": null,
+    "actionRequired": false,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-21T12:52:47.315Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T12:47:12.588Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-21T12:52:47.316Z"
+      }
+    ],
+    "createdAt": "2026-06-21T12:47:12.588Z",
+    "updatedAt": "2026-06-21T12:52:47.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37e59bcad20ece37bfec8b",
+    "type": "OrderNew",
+    "targetType": "SaleOrder",
+    "targetId": "6a37e599cad20ece37bfec7e",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Đơn bán mới #6a37e599cad20ece37bfec7e cần xử lý",
+    "title": "Đơn mới",
+    "groupKey": "sale-order-new:6a37e599cad20ece37bfec7e",
+    "data": {
+      "orderId": "6a37e599cad20ece37bfec7e",
+      "orderType": "sale"
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-22T01:09:20.450Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T13:22:35.389Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Cập nhật trạng thái từ New sang Seen",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-22T01:09:20.450Z"
+      }
+    ],
+    "createdAt": "2026-06-21T13:22:35.390Z",
+    "updatedAt": "2026-06-22T01:09:20.450Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37e59bcad20ece37bfec8d",
+    "type": "StockLow",
+    "targetType": "Product",
+    "targetId": "89810ffc9950136d58a73c14",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Engage Pursuit Pro EX còn 5 trong kho",
+    "title": "Tồn kho thấp",
+    "groupKey": "stock-low:89810ffc9950136d58a73c14",
+    "data": {
+      "productId": "89810ffc9950136d58a73c14",
+      "totalQuantity": 5,
+      "threshold": 5
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-22T01:09:21.066Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T13:22:35.391Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Đánh dấu đã xem hàng loạt",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-22T01:09:21.066Z"
+      }
+    ],
+    "createdAt": "2026-06-21T13:22:35.391Z",
+    "updatedAt": "2026-06-22T01:09:21.066Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a37e72e54c353d57df34498",
+    "type": "OrderNew",
+    "targetType": "SaleOrder",
+    "targetId": "6a37e72d54c353d57df3448c",
+    "status": "Seen",
+    "priority": "HIGH",
+    "message": "Đơn bán mới #6a37e72d54c353d57df3448c cần xử lý",
+    "title": "Đơn mới",
+    "groupKey": "sale-order-new:6a37e72d54c353d57df3448c",
+    "data": {
+      "orderId": "6a37e72d54c353d57df3448c",
+      "orderType": "sale"
+    },
+    "expiresAt": null,
+    "actionRequired": true,
+    "handledBy": "6a34d194b88051d5d9dc6941",
+    "handledAt": "2026-06-22T01:09:19.634Z",
+    "createdBy": null,
+    "activityLogs": [
+      {
+        "action": "CREATED",
+        "actor": null,
+        "actorRole": "",
+        "note": "Tạo thông báo",
+        "fromStatus": "",
+        "toStatus": "New",
+        "at": "2026-06-21T13:29:18.898Z"
+      },
+      {
+        "action": "STATUS_CHANGED",
+        "actor": "6a34d194b88051d5d9dc6941",
+        "actorRole": "staff",
+        "note": "Cập nhật trạng thái từ New sang Seen",
+        "fromStatus": "New",
+        "toStatus": "Seen",
+        "at": "2026-06-22T01:09:19.634Z"
+      }
+    ],
+    "createdAt": "2026-06-21T13:29:18.899Z",
+    "updatedAt": "2026-06-22T01:09:19.635Z",
+    "__v": 0
+  }
+]

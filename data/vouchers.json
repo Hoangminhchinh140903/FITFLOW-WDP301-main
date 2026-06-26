@@ -1,0 +1,30 @@
+[
+  {
+    "_id": "65f000000000000000000e01",
+    "code": "WELCOME50K",
+    "discountType": "Fixed",
+    "discountValue": 50000,
+    "minOrderValue": 300000,
+    "expiryDate": "2026-12-31T23:59:59.000Z",
+    "usageLimit": 1000,
+    "usedCount": 0,
+    "isActive": true,
+    "createdAt": "2026-02-13T09:30:00.000Z",
+    "updatedAt": "2026-06-19T05:20:38.178Z",
+    "__v": 0
+  },
+  {
+    "_id": "65f000000000000000000e02",
+    "code": "RENT10",
+    "discountType": "Percentage",
+    "discountValue": 10,
+    "minOrderValue": 500000,
+    "expiryDate": "2026-06-30T23:59:59.000Z",
+    "usageLimit": null,
+    "usedCount": 0,
+    "isActive": true,
+    "createdAt": "2026-02-18T09:30:00.000Z",
+    "updatedAt": "2026-06-19T05:20:38.164Z",
+    "__v": 0
+  }
+]

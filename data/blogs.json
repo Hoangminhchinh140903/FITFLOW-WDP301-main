@@ -1,0 +1,30 @@
+[
+  {
+    "_id": "65f000000000000000001001",
+    "title": "Kinh nghiệm thuê đồ thể thao và vợt Pickleball",
+    "slug": "kinh-nghiem-thue-do-the-thao-va-vot-pickleball",
+    "thumbnail": "/uploads/blogs/tips-1.jpg",
+    "category": "Tips",
+    "likeCount": 5,
+    "viewCount": 125,
+    "status": "published",
+    "content": "Gợi ý chọn trang phục thoáng mát, chọn size, và các mẫu vợt Pickleball/Tennis phù hợp với lối chơi.",
+    "createdAt": "2026-02-06T09:30:00.000Z",
+    "updatedAt": "2026-06-22T12:35:42.993Z",
+    "__v": 0
+  },
+  {
+    "_id": "65f000000000000000001002",
+    "title": "Bảng giá thuê đồ thể thao & vợt 2026 (cập nhật)",
+    "slug": "bang-gia-thue-do-the-thao-vot-2026",
+    "thumbnail": "/uploads/blogs/price-2026.jpg",
+    "category": "Pricing",
+    "likeCount": 2,
+    "viewCount": 60,
+    "status": "draft",
+    "content": "Tổng hợp mức giá thuê theo loại vợt, bóng và trang phục thể thao chuyên dụng.",
+    "createdAt": "2026-02-21T09:30:00.000Z",
+    "updatedAt": "2026-06-18T13:16:09.768Z",
+    "__v": 0
+  }
+]

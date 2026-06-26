@@ -1,0 +1,216 @@
+const mongoose = require('mongoose');
+
+const rentOrderSchema = new mongoose.Schema({
+  orderCode: {
+    type: String,
+    default: null
+  },
+  customerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  staffId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  status: {
+    type: String,
+    enum: [
+      'Draft',
+      'PendingDeposit',
+      'Deposited',
+      'Confirmed',
+      'WaitingPickup',
+      'Renting',
+      'WaitingReturn',
+      'Returned',
+      'Completed',
+      'NoShow',
+      'Late',
+      'Compensation',
+      'Cancelled'
+    ],
+    default: 'PendingDeposit'
+  },
+  rentStartDate: {
+    type: Date,
+    required: true
+  },
+  rentEndDate: {
+    type: Date,
+    required: true
+  },
+  depositAmount: {
+    type: Number,
+    required: true
+  },
+  remainingAmount: {
+    type: Number,
+    required: true
+  },
+  damageFee: {
+    type: Number,
+    default: 0
+  },
+  lateDays: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  lateFee: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  compensationFee: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  depositForfeited: {
+    type: Boolean,
+    default: false
+  },
+  confirmedAt: {
+    type: Date,
+    default: null
+  },
+  pickupAt: {
+    type: Date,
+    default: null
+  },
+  returnedAt: {
+    type: Date,
+    default: null
+  },
+  actualReturnDate: {
+    type: Date,
+    default: null
+  },
+  completedAt: {
+    type: Date,
+    default: null
+  },
+  noShowAt: {
+    type: Date,
+    default: null
+  },
+  idempotencyKey: {
+    type: String,
+    default: null
+  },
+  voucherCode: {
+    type: String,
+    default: null
+  },
+  voucherId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Voucher',
+    default: null
+  },
+  voucherSnapshot: {
+    name: { type: String, default: '' },
+    voucherType: { type: String, default: '' },
+    value: { type: Number, default: 0 },
+    maxDiscount: { type: Number, default: null },
+    appliesTo: { type: String, default: '' },
+    appliesOn: { type: String, default: '' },
+    originalSubtotal: { type: Number, default: 0 },
+    finalSubtotal: { type: Number, default: 0 },
+  },
+  discountAmount: {
+    type: Number,
+    default: 0
+  },
+  totalAmount: {
+    type: Number,
+    required: true
+  },
+  // Thông tin cho đơn thuê guest (không đăng nhập) — customerId vẫn required vì BE
+  // tự tạo/tái sử dụng User dạng walk_in gắn với email đã verify.
+  guestVerificationMethod: {
+    type: String,
+    enum: ['email', 'phone', null],
+    default: null
+  },
+  guestVerificationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'GuestVerification',
+    default: null
+  },
+  guestContact: {
+    name: { type: String, default: '' },
+    phone: { type: String, default: '' },
+    email: { type: String, default: '' }
+  },
+  invoice: {
+    invoiceRecordId: {
+      type: String,
+      default: ''
+    },
+    invoiceId: {
+      type: String,
+      default: ''
+    },
+    invoiceNo: {
+      type: String,
+      default: ''
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'issued', 'cancelled', 'failed'],
+      default: 'pending'
+    },
+    issuedAt: {
+      type: Date,
+      default: null
+    },
+    cancelledAt: {
+      type: Date,
+      default: null
+    },
+    errorMessage: {
+      type: String,
+      default: ''
+    },
+    emailTo: {
+      type: String,
+      default: ''
+    },
+    emailStatus: {
+      type: String,
+      enum: ['pending', 'sent', 'failed', 'skipped'],
+      default: 'pending'
+    },
+    updatedAt: {
+      type: Date,
+      default: null
+    }
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
+});
+
+rentOrderSchema.index(
+  { idempotencyKey: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { idempotencyKey: { $type: 'string' } }
+  }
+);
+
+rentOrderSchema.index(
+  { orderCode: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { orderCode: { $type: 'string' } }
+  }
+);
+
+module.exports = mongoose.model('RentOrder', rentOrderSchema);

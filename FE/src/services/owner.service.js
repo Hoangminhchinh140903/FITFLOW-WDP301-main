@@ -1,0 +1,340 @@
+import axiosClient from '../config/axios'
+
+const appendPayloadField = (formData, field, value) => {
+    if (value === undefined || value === null) {
+        return
+    }
+
+    if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+        formData.append(field, JSON.stringify(value))
+        return
+    }
+
+    formData.append(field, String(value))
+}
+
+export const getOwnerDashboardSummaryApi = async () => {
+    const response = await axiosClient.get('/owner/analytics/summary')
+    return response.data
+}
+
+export const getOwnerDashboardApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/dashboard', { params })
+    return response.data
+}
+
+export const getOwnerRevenueAnalyticsApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/analytics/revenue', { params })
+    return response.data
+}
+
+export const getOwnerInventoryStatsApi = async () => {
+    const response = await axiosClient.get('/owner/analytics/inventory')
+    return response.data
+}
+
+export const getOwnerCustomerStatsApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/analytics/customers', { params })
+    return response.data
+}
+
+export const getOwnerTopProductsApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/analytics/top-products', { params })
+    return response.data
+}
+
+export const getOwnerTopProductsSummaryApi = async () => {
+    const response = await axiosClient.get('/owner/top-products')
+    return response.data
+}
+
+export const getOwnerInventoryAlertsApi = async () => {
+    const response = await axiosClient.get('/owner/inventory-alerts')
+    return response.data
+}
+
+export const getOwnerRestockSuggestionsApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/restock-suggestions', { params })
+    return response.data
+}
+
+export const getOwnerRentalStatsApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/analytics/rentals', { params })
+    return response.data
+}
+
+export const getOwnerProductsApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/products', { params })
+    return response.data
+}
+
+export const getOwnerCategoriesApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/categories', { params })
+    return response.data
+}
+
+export const createOwnerCategoryApi = async (payload) => {
+    const response = await axiosClient.post('/owner/categories', payload)
+    return response.data
+}
+
+export const updateOwnerCategoryApi = async (categoryId, payload) => {
+    const response = await axiosClient.put(`/owner/categories/${categoryId}`, payload)
+    return response.data
+}
+
+export const deleteOwnerCategoryApi = async (categoryId) => {
+    const response = await axiosClient.delete(`/owner/categories/${categoryId}`)
+    return response.data
+}
+
+export const getOwnerProductDetailApi = async (productId) => {
+    const response = await axiosClient.get(`/owner/products/${productId}`)
+    return response.data
+}
+
+export const getProductInstancesApi = async (productId, params = {}) => {
+    const response = await axiosClient.get(`/products/${productId}/instances`, { params })
+    return response.data
+}
+
+export const getProductSizeGuideApi = async (productId, params = {}) => {
+    const response = await axiosClient.get(`/products/${productId}/size-guide`, { params })
+    return response.data
+}
+
+export const getOwnerGlobalSizeGuideApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/size-guides/global', { params })
+    return response.data
+}
+
+export const upsertOwnerGlobalSizeGuideApi = async (payload) => {
+    const response = await axiosClient.put('/owner/size-guides/global', payload)
+    return response.data
+}
+
+export const deleteOwnerGlobalSizeGuideApi = async () => {
+    const response = await axiosClient.delete('/owner/size-guides/global')
+    return response.data
+}
+
+export const getOwnerProductSizeGuideApi = async (productId, params = {}) => {
+    const response = await axiosClient.get(`/owner/products/${productId}/size-guide`, { params })
+    return response.data
+}
+
+export const upsertOwnerProductSizeGuideApi = async (productId, payload) => {
+    const response = await axiosClient.put(`/owner/products/${productId}/size-guide`, payload)
+    return response.data
+}
+
+export const deleteOwnerProductSizeGuideApi = async (productId) => {
+    const response = await axiosClient.delete(`/owner/products/${productId}/size-guide`)
+    return response.data
+}
+
+export const createOwnerProductApi = async (payload) => {
+    const imageFiles = Array.isArray(payload?.imageFiles) ? payload.imageFiles : []
+    const instances = Array.isArray(payload?.instances) ? payload.instances : []
+
+    if (imageFiles.length > 0 || instances.length > 0) {
+        const formData = new FormData()
+
+        const fields = [
+            'name',
+            'category',
+            'categoryParent',
+            'categoryChild',
+            'categoryAncestors',
+            'sizes',
+            'hasSizes',
+            'color',
+            'colorVariants',
+            'quantity',
+            'description',
+            'baseRentPrice',
+            'baseSalePrice',
+            'depositAmount',
+            'buyoutValue',
+            'pricingMode',
+            'commonRentPrice',
+            'variantMatrix',
+            'isDraft',
+            'sizeGuideMode',
+            'sizeGuideRows',
+            'images'
+        ]
+
+        fields.forEach((field) => {
+            appendPayloadField(formData, field, payload?.[field])
+        })
+
+        imageFiles.forEach((file) => {
+            formData.append('images', file)
+        })
+
+        if (instances.length > 0) {
+            formData.append('instances', JSON.stringify(instances))
+        }
+
+        const response = await axiosClient.post('/owner/products', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+
+        return response.data
+    }
+
+    const response = await axiosClient.post('/owner/products', payload)
+    return response.data
+}
+
+export const updateOwnerProductApi = async (productId, payload) => {
+    const imageFiles = Array.isArray(payload?.imageFiles) ? payload.imageFiles : []
+
+    if (imageFiles.length > 0) {
+        const formData = new FormData()
+
+        const fields = [
+            'name',
+            'category',
+            'categoryParent',
+            'categoryChild',
+            'categoryAncestors',
+            'sizes',
+            'hasSizes',
+            'color',
+            'colorVariants',
+            'quantity',
+            'description',
+            'baseRentPrice',
+            'baseSalePrice',
+            'depositAmount',
+            'buyoutValue',
+            'pricingMode',
+            'commonRentPrice',
+            'variantMatrix',
+            'isDraft',
+            'sizeGuideMode',
+            'sizeGuideRows',
+            'images'
+        ]
+
+        fields.forEach((field) => {
+            appendPayloadField(formData, field, payload?.[field])
+        })
+
+        imageFiles.forEach((file) => {
+            formData.append('images', file)
+        })
+
+        const response = await axiosClient.put(`/owner/products/${productId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+
+        return response.data
+    }
+
+    const response = await axiosClient.put(`/owner/products/${productId}`, payload)
+    return response.data
+}
+
+export const updateOwnerProductCollateralApi = async (productId, payload) => {
+    const response = await axiosClient.patch(`/owner/products/${productId}/collateral`, payload)
+    return response.data
+}
+
+export const deleteOwnerProductApi = async (productId) => {
+    const response = await axiosClient.delete(`/owner/products/${productId}`)
+    return response.data
+}
+
+export const getOwnerStaffApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/staff', { params })
+    return response.data
+}
+
+export const getOwnerStaffDetailApi = async (staffId) => {
+    const response = await axiosClient.get(`/owner/staff/${staffId}`)
+    return response.data
+}
+
+export const createOwnerStaffApi = async (payload) => {
+    const response = await axiosClient.post('/owner/staff', payload)
+    return response.data
+}
+
+export const updateOwnerStaffStatusApi = async (staffId, status) => {
+    const response = await axiosClient.patch(`/owner/staff/${staffId}/status`, { status })
+    return response.data
+}
+
+export const updateOwnerStaffRoleApi = async (staffId, role) => {
+    const response = await axiosClient.patch(`/owner/staff/${staffId}/role`, { role })
+    return response.data
+}
+
+export const getOwnerStaffPermissionsApi = async (staffId) => {
+    const response = await axiosClient.get(`/owner/staff/${staffId}/permissions`)
+    return response.data
+}
+
+export const updateOwnerStaffPermissionsApi = async (staffId, payload) => {
+    const response = await axiosClient.patch(`/owner/staff/${staffId}/permissions`, payload)
+    return response.data
+}
+
+export const lockOwnerStaffApi = async (staffId) => {
+    const response = await axiosClient.patch(`/owner/staff/${staffId}/lock`)
+    return response.data
+}
+
+export const getOwnerCustomersApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/customers', { params })
+    return response.data
+}
+
+export const getOwnerCustomerDetailApi = async (customerId) => {
+    const response = await axiosClient.get(`/owner/customers/${customerId}`)
+    return response.data
+}
+
+export const getOwnerOrdersApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/orders', { params })
+    return response.data
+}
+
+export const updateOwnerOrderStatusApi = async (orderId, status) => {
+    const response = await axiosClient.patch(`/owner/orders/${orderId}/status`, { status })
+    return response.data
+}
+
+export const updateOwnerCustomerStatusApi = async (customerId, status) => {
+    const response = await axiosClient.patch(`/owner/customers/${customerId}/status`, { status })
+    return response.data
+}
+
+export const importOwnerProductsApi = async (file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await axiosClient.post('/owner/products/import', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+
+    return response.data
+}
+
+export const exportOwnerProductsApi = async (params = {}) => {
+    const response = await axiosClient.get('/owner/products/export', {
+        params,
+        responseType: 'blob'
+    })
+
+    return response
+}

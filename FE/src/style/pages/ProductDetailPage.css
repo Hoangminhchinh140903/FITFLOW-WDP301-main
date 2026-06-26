@@ -1,0 +1,317 @@
+/* =============================================
+   FITFLOW – ProductDetailPage CSS (FitFlow design)
+   ============================================= */
+
+.product-detail-page {
+  min-height: 100vh;
+  background: var(--ff-bg, #f6f7ef);
+  color: var(--ff-dark, #10150f);
+}
+
+.detail-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 20px 72px;
+}
+
+/* ── Breadcrumb ── */
+.detail-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  color: var(--ff-text, #596255);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.detail-breadcrumb a {
+  color: var(--ff-text, #596255);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.detail-breadcrumb a:hover {
+  color: var(--ff-dark, #10150f);
+}
+
+.detail-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+  color: var(--ff-text, #596255);
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 10px 18px;
+  border: 1px solid var(--ff-line, rgba(16,21,15,.1));
+  border-radius: 999px;
+  background: var(--ff-cream, #fffaf0);
+  transition: background 0.18s, color 0.18s;
+}
+
+.detail-back-link:hover {
+  background: var(--ff-dark, #10150f);
+  color: var(--ff-green, #c9ff3d);
+  border-color: var(--ff-dark, #10150f);
+}
+
+.detail-status {
+  margin: 20px 0 0;
+  color: var(--ff-text, #596255);
+  font-size: 16px;
+}
+
+/* ── Main grid ── */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 28px;
+}
+
+/* ── Gallery ── */
+.detail-gallery {
+  background: var(--ff-cream, #fffaf0);
+  border: 1px solid var(--ff-line, rgba(16,21,15,.1));
+  border-radius: var(--ff-radius-xl, 34px);
+  padding: 20px;
+}
+
+.detail-main-image-wrap {
+  border-radius: 24px;
+  overflow: hidden;
+  background: #ebe9e3;
+}
+
+.detail-main-image {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-main-image.empty {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ff-muted, #8d9788);
+  font-weight: 700;
+}
+
+/* Thumbnails */
+.detail-thumbs {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.detail-thumb {
+  border: 2px solid transparent;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--ff-cream, #fffaf0);
+  cursor: pointer;
+  transition: border-color 0.18s;
+}
+
+.detail-thumb.active {
+  border-color: var(--ff-green, #c9ff3d);
+}
+
+.detail-thumb:hover {
+  border-color: var(--ff-dark, #10150f);
+}
+
+.detail-thumb img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Info panel ── */
+.detail-info {
+  background: var(--ff-cream, #fffaf0);
+  border: 1px solid var(--ff-line, rgba(16,21,15,.1));
+  border-radius: var(--ff-radius-xl, 34px);
+  padding: 28px;
+}
+
+/* Product name */
+.detail-info h1 {
+  margin: 0 0 16px;
+  font-size: clamp(26px, 3.5vw, 38px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: var(--ff-dark, #10150f);
+  text-transform: uppercase;
+}
+
+/* Meta grid (condition, stock…) */
+.detail-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.detail-meta-grid > div {
+  border: 1px solid var(--ff-line, rgba(16,21,15,.1));
+  border-radius: 18px;
+  padding: 12px 14px;
+  display: grid;
+  gap: 4px;
+  background: #fff;
+}
+
+.detail-meta-grid span {
+  color: var(--ff-text, #596255);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.detail-meta-grid strong {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--ff-dark, #10150f);
+}
+
+/* Description */
+.detail-description {
+  margin-top: 18px;
+}
+
+.detail-description h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ff-dark, #10150f);
+}
+
+.detail-description p {
+  margin: 0;
+  color: var(--ff-text, #596255);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* Color picker */
+.detail-color-picker {
+  margin-top: 16px;
+}
+
+.detail-color-picker p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ff-dark, #10150f);
+}
+
+.detail-color-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-color-btn {
+  border: 1px solid var(--ff-line, rgba(16,21,15,.1));
+  background: #fff;
+  color: var(--ff-dark, #10150f);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.detail-color-btn:hover {
+  border-color: var(--ff-dark, #10150f);
+  background: #ebe7dc;
+}
+
+.detail-color-btn.active {
+  background: var(--ff-dark, #10150f);
+  border-color: var(--ff-dark, #10150f);
+  color: var(--ff-green, #c9ff3d);
+}
+
+/* Action buttons */
+.detail-actions {
+  margin-top: 22px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.detail-actions button {
+  border: 0;
+  border-radius: 999px;
+  background: var(--ff-dark, #10150f);
+  color: var(--ff-green, #c9ff3d);
+  font-weight: 900;
+  font-size: 14px;
+  height: 48px;
+  padding: 0 28px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: background 0.18s, transform 0.15s;
+}
+
+.detail-actions button:hover {
+  background: var(--ff-dark-soft, #1b241b);
+  transform: translateY(-2px);
+}
+
+.detail-actions .buy {
+  background: var(--ff-green, #c9ff3d);
+  color: var(--ff-dark, #10150f);
+  box-shadow: 0 10px 28px rgba(201, 255, 61, 0.35);
+}
+
+.detail-actions .buy:hover {
+  background: #d8ff5a;
+  box-shadow: 0 14px 36px rgba(201, 255, 61, 0.45);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .detail-shell {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .detail-gallery,
+  .detail-info {
+    border-radius: 20px;
+    padding: 16px;
+  }
+
+  .detail-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-info h1 {
+    font-size: 24px;
+    letter-spacing: -0.5px;
+  }
+}

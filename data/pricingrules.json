@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "84233a725e38ae801f3ed344",
+    "applyFor": "Rent",
+    "conditionLevel": "Used",
+    "modifyType": "Percentage",
+    "modifyValue": -10,
+    "isHot": true,
+    "priority": 10,
+    "scope": "Global",
+    "productId": null,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "updatedAt": "2026-06-18T12:27:18.000Z",
+    "__v": 0
+  }
+]

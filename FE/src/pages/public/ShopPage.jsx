@@ -1,0 +1,422 @@
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { SlidersHorizontal, X } from "lucide-react";
+import Header from "../../components/common/Header";
+import ShopHeader from "../../components/catalog/shop/ShopHeader";
+import SortDropdown from "../../components/catalog/shop/SortDropdown";
+import Pagination from "../../components/catalog/shop/Pagination";
+import FilterSidebar from "../../components/catalog/common/FilterSidebar";
+import ProductGrid from "../../components/catalog/common/ProductGrid";
+import QuickViewModal from "../../components/catalog/common/QuickViewModal";
+import {
+  buildSidebarTree,
+  collectVariantOptions,
+  flattenCategories,
+  normalizeText,
+  resolveCategoryValueFromKeyword,
+} from "./catalogHelpers";
+import { useBuyCart } from "../../contexts/BuyCartContext";
+import { useFavorites } from "../../contexts/FavoritesContext";
+import { useAuth } from "../../hooks/useAuth";
+import { getRouteByRole, isDashboardRole } from "../../utils/auth";
+import { API_BASE_URL } from "../../config/env";
+
+const DEFAULT_FILTERS = { category: "", color: "", size: "", price: "", productType: "" };
+const DEFAULT_PAGINATION = { page: 1, totalPages: 1, totalItems: 0, limit: 24 };
+
+const extractProductList = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.data?.items)) return payload.data.items;
+  if (Array.isArray(payload?.products)) return payload.products;
+  if (Array.isArray(payload?.products?.items)) return payload.products.items;
+  return [];
+};
+
+const toApiUrl = (path) => `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+
+/** Tổng có sẵn để bán — đồng bộ logic “Hết hàng” và sắp xếp. */
+const buyAvailableScore = (product = {}) =>
+  Math.max(0, Number(product?.availableQuantity ?? 0));
+
+const priceInRange = (price, range) => {
+  if (!range) return true;
+  if (range === "low") return price < 300000;
+  if (range === "mid") return price >= 300000 && price <= 700000;
+  if (range === "high") return price > 700000;
+  return true;
+};
+
+const isFreeSizeLike = (value = "") => {
+  const normalized = String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+  return normalized === "freesize" || normalized === "onesize" || normalized === "free";
+};
+
+const requiresVariantSelection = (product = {}) => {
+  const category = String(product?.category || '').trim();
+  if (['Apparel', 'Shoes'].includes(category)) return true;
+
+  if (product?.hasSizes === true) return true;
+
+  const rows = Array.isArray(product?.sizes) ? product.sizes : [];
+  const hasSizedRows = rows.some((row) => {
+    const sizeValue = typeof row === "object" ? row?.size : row;
+    const sizeText = String(sizeValue || "").trim();
+    return Boolean(sizeText) && !isFreeSizeLike(sizeText);
+  });
+  if (hasSizedRows) return true;
+
+  const options = Array.isArray(product?.sizeOptions) ? product.sizeOptions : [];
+  const hasSizedOptions = options.some((size) => {
+    const sizeText = String(size || "").trim();
+    return Boolean(sizeText) && !isFreeSizeLike(sizeText);
+  });
+  if (hasSizedOptions) return true;
+
+  return false;
+};
+
+export default function ShopPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { addItem } = useBuyCart();
+  const { isFavorite, isFavoriteLoading, toggleFavorite } = useFavorites();
+  const { user } = useAuth();
+  const isStaffOrOwner = isDashboardRole(user?.role);
+
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [sortBy, setSortBy] = useState("newest");
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
+  const [loading, setLoading] = useState(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [toast, setToast] = useState("");
+
+  const searchKeyword = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return (params.get("q") || "").trim();
+  }, [location.search]);
+
+  const categoryKeyword = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return (params.get("category") || "").trim();
+  }, [location.search]);
+
+  const categoryTree = useMemo(() => buildSidebarTree(categories), [categories]);
+  const flatCategories = useMemo(() => flattenCategories(categoryTree), [categoryTree]);
+
+  useEffect(() => {
+    let mounted = true;
+    const run = async () => {
+      try {
+        const response = await fetch(toApiUrl("/categories?lang=vi&purpose=buy"));
+        const payload = response.ok ? await response.json() : { categories: [] };
+        if (!mounted) return;
+        setCategories(Array.isArray(payload?.categories) ? payload.categories : []);
+      } catch {
+        if (mounted) setCategories([]);
+      }
+    };
+    run();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!categoryKeyword || flatCategories.length === 0) return;
+    const resolved = resolveCategoryValueFromKeyword({
+      keyword: categoryKeyword,
+      nodes: flatCategories,
+      mode: "shop",
+    });
+    if (resolved) {
+      setFilters((prev) => ({ ...prev, category: resolved }));
+    }
+  }, [categoryKeyword, flatCategories]);
+
+  useEffect(() => {
+    let mounted = true;
+    const run = async () => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams({
+          lang: "vi",
+          purpose: "buy",
+          limit: "24",
+          page: String(page),
+        });
+        if (searchKeyword) params.set("search", searchKeyword);
+        if (filters.category) params.set("category", filters.category);
+        const response = await fetch(toApiUrl(`/products?${params.toString()}`));
+        const payload = response.ok ? await response.json() : null;
+        if (!mounted) return;
+        const apiResponseData = extractProductList(payload);
+        const normalizedProducts = (Array.isArray(apiResponseData) ? apiResponseData : []).filter((product) => {
+          const pricingMode = String(product?.pricingMode || "").trim().toLowerCase();
+          // Accept all supported pricing modes from backend. Excluding unknown mode
+          // made valid products disappear even when API returned data.
+          return !pricingMode || ["sale", "buy", "common", "per_variant"].includes(pricingMode);
+        });
+        setProducts(Array.isArray(normalizedProducts) ? normalizedProducts : []);
+        setPagination(payload?.pagination || DEFAULT_PAGINATION);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    run();
+    return () => {
+      mounted = false;
+    };
+  }, [searchKeyword, filters.category, page]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchKeyword, filters.category]);
+
+  const { sizes, colors } = useMemo(() => collectVariantOptions(products), [products]);
+
+  const filteredProducts = useMemo(() => {
+    const keyword = normalizeText(searchKeyword);
+    const list = products.filter((product) => {
+      const bySearch = keyword
+        ? normalizeText(`${product?.name || ""} ${product?.description || ""}`).includes(keyword)
+        : true;
+      const bySize = filters.size
+        ? normalizeText(
+            `${product?.size || ""} ${Array.isArray(product?.sizeOptions) ? product.sizeOptions.join(" ") : ""} ${
+              Array.isArray(product?.sizes)
+                ? product.sizes.map((row) => (typeof row === "object" ? row?.size : row)).join(" ")
+                : ""
+            } ${
+              Array.isArray(product?.colorVariants)
+                ? product.colorVariants.map((variant) => variant?.size || "").join(" ")
+                : ""
+            }`
+          ).includes(normalizeText(filters.size))
+        : true;
+      const byColor = filters.color
+        ? normalizeText(
+            `${product?.color || ""} ${
+              Array.isArray(product?.colorVariants)
+                ? product.colorVariants.map((variant) => variant?.name || variant?.color || "").join(" ")
+                : ""
+            }`
+          ).includes(normalizeText(filters.color))
+        : true;
+      const byPrice = priceInRange(Number(product?.baseSalePrice || product?.baseRentPrice || 0), filters.price);
+      
+      const byProductType = filters.productType
+        ? (filters.productType === 'apparel' && String(product?.category || '').trim() === 'Apparel') ||
+          (filters.productType === 'shoes' && String(product?.category || '').trim() === 'Shoes') ||
+          (filters.productType === 'accessories' && String(product?.category || '').trim() === 'Accessories') ||
+          (filters.productType === 'racket' && (['Tennis', 'Badminton', 'Pickleball'].includes(String(product?.category || '').trim()) || /vợt|racket|tennis|pickleball/i.test(product?.name || '')))
+        : true;
+
+      return bySearch && bySize && byColor && byPrice && byProductType;
+    });
+
+    list.sort((a, b) => {
+      const aFav = isFavorite(a._id);
+      const bFav = isFavorite(b._id);
+      if (aFav !== bFav) return aFav ? -1 : 1;
+
+      const aOk = buyAvailableScore(a) > 0;
+      const bOk = buyAvailableScore(b) > 0;
+      if (aOk !== bOk) return aOk ? -1 : 1;
+      const stockDiff = buyAvailableScore(b) - buyAvailableScore(a);
+      if (stockDiff !== 0) return stockDiff;
+
+      if (sortBy === "price_asc") return Number(a.baseSalePrice || 0) - Number(b.baseSalePrice || 0);
+      if (sortBy === "price_desc") return Number(b.baseSalePrice || 0) - Number(a.baseSalePrice || 0);
+      if (sortBy === "name_asc") return String(a.name || "").localeCompare(String(b.name || ""), "vi");
+      return String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
+    });
+
+    return list;
+  }, [products, filters, sortBy, searchKeyword, isFavorite]);
+
+  const favoriteIds = useMemo(() => {
+    const ids = new Set();
+    filteredProducts.forEach((product) => {
+      if (isFavorite(product._id)) ids.add(product._id);
+    });
+    return ids;
+  }, [filteredProducts, isFavorite]);
+
+  const favoriteLoadingIds = useMemo(() => {
+    const ids = new Set();
+    filteredProducts.forEach((product) => {
+      if (isFavoriteLoading(product._id)) ids.add(product._id);
+    });
+    return ids;
+  }, [filteredProducts, isFavoriteLoading]);
+
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(""), 2200);
+  };
+
+  const handleToggleFavorite = async (product) => {
+    const result = await toggleFavorite(product);
+    if (!result.ok && result.reason === "AUTH_REQUIRED") {
+      showToast("Vui lòng đăng nhập để sử dụng chức năng yêu thích");
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+    if (!result.ok && result.reason === "PENDING") return;
+    if (!result.ok) {
+      showToast(result.message || "Không thể cập nhật yêu thích");
+      return;
+    }
+    showToast(result.added ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích");
+  };
+
+  const handleAddToCart = (product) => {
+    if (isStaffOrOwner) {
+      showToast("Tài khoản owner/staff không thể mua hàng ở trang khách.");
+      navigate(getRouteByRole(user?.role));
+      return;
+    }
+
+    if (Number(product?.availableQuantity || 0) <= 0) {
+      showToast("Sản phẩm đang hết hàng.");
+      return;
+    }
+
+    if (requiresVariantSelection(product)) {
+      showToast("Vui lòng chọn size/tình trạng trong trang chi tiết trước khi thêm giỏ hàng.");
+      navigate(`/products/${product?._id || product?.id}`);
+      return;
+    }
+
+    addItem(product, {
+      color: "Mặc định",
+      size: "FREE SIZE",
+      salePrice: Number(product?.baseSalePrice || 0),
+      quantity: 1,
+      image: product?.images?.[0] || product?.imageUrl || '',
+    });
+    showToast("Đã thêm vào giỏ hàng.");
+  };
+
+  const handleResetFilters = () => setFilters(DEFAULT_FILTERS);
+
+  return (
+    <div className="min-h-screen bg-[#f6f7ef] pb-10 text-[#10150f]">
+      <Header active="buy" />
+
+      <main className="mx-auto w-full max-w-[1280px] space-y-6 px-4 py-5 md:px-6 lg:px-8">
+        <ShopHeader />
+
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-black uppercase tracking-tight text-[#10150f]">Danh sách sản phẩm</h2>
+            <p className="mt-1 text-sm text-[#596255] font-semibold">Mua đồ theo sản phẩm và phụ kiện thể thao có sẵn.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsMobileFilterOpen(true)}
+              className="inline-flex items-center gap-2 rounded-full border border-[rgba(16,21,15,0.15)] bg-[#fffaf0] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#10150f] lg:hidden"
+            >
+              <SlidersHorizontal size={14} />
+              Bộ lọc
+            </button>
+            <SortDropdown value={sortBy} onChange={setSortBy} />
+          </div>
+        </div>
+
+        <section className="grid gap-5 lg:grid-cols-[280px_1fr]">
+          <FilterSidebar
+            mode="shop"
+            categories={flatCategories}
+            filters={filters}
+            onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))}
+            onReset={handleResetFilters}
+            sizeOptions={sizes}
+            colorOptions={colors}
+            className="hidden lg:block"
+          />
+
+          <div>
+            <ProductGrid
+              mode="shop"
+              products={filteredProducts}
+              loading={loading}
+              favoriteIds={favoriteIds}
+              favoriteLoadingIds={favoriteLoadingIds}
+              onToggleFavorite={handleToggleFavorite}
+              onQuickView={setQuickViewProduct}
+              onPrimaryAction={handleAddToCart}
+              emptyText="Không có sản phẩm phù hợp với bộ lọc mua đồ."
+            />
+
+            <Pagination page={pagination.page} totalPages={pagination.totalPages} onPageChange={setPage} />
+
+            <section className="mt-6 rounded-[28px] border border-[rgba(16,21,15,0.1)] bg-[#fffaf0] p-6 shadow-sm">
+              <h3 className="text-sm font-black uppercase tracking-wider text-[#10150f] border-b border-[rgba(16,21,15,0.08)] pb-2">Thông tin giao hàng & đổi trả</h3>
+              <ul className="mt-3 space-y-2 text-sm text-[#596255] font-semibold">
+                <li>• Giao hàng toàn quốc, hỗ trợ hỏa tốc tại Hà Nội.</li>
+                <li>• Đổi trả trong 48 giờ với sản phẩm lỗi từ nhà sản xuất.</li>
+              </ul>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      {isMobileFilterOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] p-4 lg:hidden" onClick={() => setIsMobileFilterOpen(false)}>
+          <div
+            className="mx-auto max-w-md rounded-[28px] bg-[#fffaf0] p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between border-b border-[rgba(16,21,15,0.08)] pb-3">
+              <h3 className="text-sm font-black uppercase tracking-wider text-[#10150f]">Bộ lọc mua đồ</h3>
+              <button
+                type="button"
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(16,21,15,0.12)] bg-[#fffaf0] text-[#10150f] hover:bg-[#ebe7dc] transition"
+              >
+                <X size={14} />
+              </button>
+            </div>
+            <FilterSidebar
+              mode="shop"
+              categories={flatCategories}
+              filters={filters}
+              onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))}
+              onReset={handleResetFilters}
+              sizeOptions={sizes}
+              colorOptions={colors}
+            />
+          </div>
+        </div>
+      )}
+
+      <QuickViewModal
+        mode="shop"
+        open={Boolean(quickViewProduct)}
+        product={quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+        onPrimaryAction={(product) => {
+          setQuickViewProduct(null);
+          handleAddToCart(product);
+        }}
+      />
+
+      {toast && (
+        <div className="fixed right-4 top-24 z-[80] rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white shadow-lg">
+          {toast}
+        </div>
+      )}
+    </div>
+  );
+}

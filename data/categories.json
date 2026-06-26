@@ -1,0 +1,57 @@
+[
+  {
+    "_id": "2da848bb99b67b343023ebd5",
+    "name": "Tennis",
+    "slug": "tennis",
+    "parentId": null,
+    "sortOrder": 1,
+    "isActive": true,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "updatedAt": "2026-06-18T12:27:18.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "3806f3c3e67dc2ad73805cbd",
+    "name": "Badminton",
+    "slug": "badminton",
+    "parentId": null,
+    "sortOrder": 2,
+    "isActive": true,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "updatedAt": "2026-06-18T12:27:18.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "7456bc73a71f75a4df378305",
+    "name": "Pickleball",
+    "slug": "pickleball",
+    "parentId": null,
+    "sortOrder": 3,
+    "isActive": true,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "updatedAt": "2026-06-18T12:27:18.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "a971562fcfdd1783886e4576",
+    "name": "Apparel",
+    "slug": "apparel",
+    "parentId": null,
+    "sortOrder": 4,
+    "isActive": true,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "updatedAt": "2026-06-18T12:27:18.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "41e1b0b98cabcf0a2bc591ca",
+    "name": "Accessories",
+    "slug": "accessories",
+    "parentId": null,
+    "sortOrder": 5,
+    "isActive": true,
+    "createdAt": "2026-06-18T12:27:18.000Z",
+    "updatedAt": "2026-06-18T12:27:18.000Z",
+    "__v": 0
+  }
+]
