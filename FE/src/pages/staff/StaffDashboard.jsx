@@ -24,9 +24,9 @@ const KPI_STATUS_VALUES = {
 }
 
 const DASHBOARD_ROUTES = {
-  rentOrders: '/staff/orders/rent',
-  returnOrders: '/staff/orders/return',
-  saleOrders: '/staff/orders/sale',
+  rentOrders: '/staff/rent-orders',
+  returnOrders: '/staff/rent-orders',
+  saleOrders: '/staff/sale-order',
   bookings: '/staff/bookings'
 }
 

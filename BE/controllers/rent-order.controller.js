@@ -1381,7 +1381,7 @@ exports.getAllRentOrders = async (req, res) => {
             RentOrder.find(query)
                 .populate('customerId', 'name phone email address gender dateOfBirth')
                 .populate('staffId', 'name phone')
-                .sort({ createdAt: 1, _id: 1 })
+                .sort({ createdAt: -1, _id: -1 })
                 .skip(skip)
                 .limit(cappedLimit),
             RentOrder.countDocuments(query),

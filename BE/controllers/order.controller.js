@@ -1303,7 +1303,7 @@ exports.getOwnerSaleOrders = async (req, res) => {
         .populate('customerId', 'name phone email')
         .populate('staffId', 'name phone email')
         .populate('history.updatedBy', 'name email')
-        .sort({ createdAt: 1, _id: 1 })
+        .sort({ createdAt: -1, _id: -1 })
         .skip(skip)
         .limit(pageSize),
       SaleOrder.countDocuments(query),
