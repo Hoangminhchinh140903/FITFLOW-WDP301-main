@@ -338,3 +338,8 @@ export const exportOwnerProductsApi = async (params = {}) => {
 
     return response
 }
+
+export const getOwnerOrderByIdApi = async (orderId) => {
+    const response = await axiosClient.get(`/owner/orders/${orderId}`)
+    return response.data
+}

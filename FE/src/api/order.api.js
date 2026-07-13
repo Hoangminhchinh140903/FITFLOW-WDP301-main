@@ -10,3 +10,4 @@ export const getGuestSaleOrderByIdRequest = (id, token) =>
     params: { token },
     skipAuthRedirect: true,
   })
+export const createWalkInSaleOrderRequest = (payload) => axiosClient.post('/orders/walk-in', payload)

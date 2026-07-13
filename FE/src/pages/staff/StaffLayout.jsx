@@ -174,12 +174,11 @@ export default function StaffLayout({ children }) {
   const sidebarMenu = [
     { to: "/staff", label: "Tổng quan", icon: "DB" },
 
-    { to: "/staff/rent-orders", label: "Đơn thuê", icon: "DT" },
+    { to: "/staff/orders", label: "Quản lý đơn hàng", icon: "DH" },
     { to: "/staff/walk-in", label: "Tạo đơn tại chỗ", icon: "WI" },
     { to: "/staff/bookings", label: "Booking thuê vợt", icon: "BK" },
     { to: "/staff/blogs", label: "Bài viết blog", icon: "BL" },
     { to: "/staff/reviews", label: "Quản lý đánh giá", icon: "DG" },
-    { to: "/staff/sale-order", label: "Đơn bán", icon: "TB" },
   ];
 
   return (

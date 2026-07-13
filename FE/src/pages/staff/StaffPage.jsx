@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 import { useTranslate } from '../../hooks/useTranslate';
 import StaffLayout from './StaffLayout';
 import StaffDashboard from './StaffDashboard';
-import StaffRentOrders from './StaffRentOrders';
+import StaffOrdersPage from './StaffOrdersPage';
 import StaffWalkInPage from './StaffWalkInPage';
 import StaffReviewsPage from './StaffReviewsPage';
 import StaffBlogsPage from './StaffBlogsPage';
@@ -32,16 +32,12 @@ const StaffPage = () => {
       return <StaffDashboard />;
     }
 
-    if (subPath === 'rent-orders') {
-      return <StaffRentOrders />;
+    if (subPath === 'orders') {
+      return <StaffOrdersPage />;
     }
 
     if (subPath === 'walk-in') {
       return <StaffWalkInPage />;
-    }
-
-    if (subPath === 'sale-order') {
-      return <OrdersList showRentOrders={false} allowSaleStatusUpdate />;
     }
 
     if (subPath === 'reviews') {

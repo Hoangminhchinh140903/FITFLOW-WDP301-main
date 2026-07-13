@@ -5,6 +5,7 @@ import {
   getMySaleOrderByIdRequest,
   getMySaleOrdersRequest,
   guestCheckoutRequest,
+  createWalkInSaleOrderRequest,
 } from '../api/order.api'
 
 export const checkoutApi = async (payload) => {
@@ -34,5 +35,10 @@ export const cancelMySaleOrderApi = async (id) => {
 
 export const getGuestSaleOrderByIdApi = async (id, token) => {
   const response = await getGuestSaleOrderByIdRequest(id, token)
+  return response.data
+}
+
+export const createWalkInSaleOrderApi = async (payload) => {
+  const response = await createWalkInSaleOrderRequest(payload)
   return response.data
 }

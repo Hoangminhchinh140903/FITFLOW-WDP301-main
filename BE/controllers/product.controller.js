@@ -816,13 +816,15 @@ const getProducts = async (req, res) => {
     });
 
     const filteredProducts = normalizedProducts.filter((product) => {
+      const categoryMatch = String(product.category || '').trim().toLowerCase();
+      const apparelKeywords = ['apparel', 'accessories', 'clothes', 'shoes', 'áo', 'quần', 'phụ kiện', 'giày', 'vớ', 'tất', 'túi', 'balo', 'bag', 'trang phục'];
+      const isApparelOrAccessories = apparelKeywords.some(kw => categoryMatch.includes(kw));
+
       if (purpose === 'buy') {
-        return Number(product.baseSalePrice || 0) > 0;
+        return Number(product.baseSalePrice || 0) > 0 || (isApparelOrAccessories && Number(product.baseRentPrice || 0) > 0);
       }
       if (purpose === 'fitting' || purpose === 'rent') {
-        const categoryMatch = String(product.category || '').trim();
-        const isExcluded = ['Apparel', 'Accessories'].includes(categoryMatch);
-        return Number(product.baseRentPrice || 0) > 0 && !isExcluded;
+        return Number(product.baseRentPrice || 0) > 0 && !isApparelOrAccessories;
       }
       return true;
     });

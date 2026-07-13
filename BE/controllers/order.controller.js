@@ -1706,5 +1706,106 @@ exports.updateOwnerSaleOrderStatus = async (req, res) => {
   }
 };
 
+/**
+ * Staff tạo đơn mua tại chỗ (Walk-in Sale Order)
+ */
+exports.createWalkInOrder = async (req, res) => {
+  let idempotencyKey = null;
 
+  try {
+    const staffId = req.user?.id;
+    const role = String(req.user?.role || '').trim().toLowerCase();
+    
+    if (role !== 'staff') {
+      return res.status(403).json({
+        success: false,
+        message: 'Chỉ nhân viên mới có thể tạo đơn mua tại chỗ.',
+      });
+    }
 
+    const {
+      customerId,
+      name = '',
+      phone = '',
+      email = '',
+      paymentMethod = 'Cash', // Default to Cash for walk-in
+      note = '',
+      items = [],
+    } = req.body || {};
+    
+    idempotencyKey = normalizeIdempotencyKey(req);
+
+    const existingOrder = await findSaleOrderByIdempotencyKey(idempotencyKey);
+    if (existingOrder) {
+      return res.status(200).json(buildCheckoutSuccessResponse(existingOrder));
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ success: false, message: 'Giỏ hàng mua đang trống.' });
+    }
+
+    // Determine the customer
+    let targetCustomerId = customerId;
+    if (!targetCustomerId) {
+      const guestUser = await findOrCreateGuestCustomer({ email, name, phone });
+      targetCustomerId = guestUser._id;
+    }
+
+    // Validate products
+    const uniqueProductIds = getUniqueProductIds(items);
+    const products = await Product.find({ _id: { $in: uniqueProductIds }, isDraft: { $ne: true } }).lean();
+    const productMap = new Map(products.map((product) => [String(product._id), product]));
+
+    if (productMap.size !== uniqueProductIds.length) {
+      return res.status(400).json({ success: false, message: 'Có sản phẩm không hợp lệ hoặc đã ngừng bán.' });
+    }
+
+    const normalizedItems = buildNormalizedSaleItems(items, productMap);
+    await ensureSaleStockAvailable(normalizedItems);
+    
+    const totalAmount = normalizedItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+    const normalizedMethod = normalizePaymentMethod(paymentMethod);
+    // For walk-in: Cash -> Completed immediately, Online -> PendingPayment
+    const initialStatus = normalizedMethod === 'Online' ? 'PendingPayment' : 'Completed';
+
+    const saleOrder = await runSaleCheckoutTransaction({
+      createOrderPayload: {
+        customerId: targetCustomerId,
+        staffId,
+        paymentMethod: normalizedMethod,
+        totalAmount,
+        shippingFee: 0,
+        shippingAddress: 'Tại cửa hàng',
+        shippingPhone: phone || '',
+        guestName: name || '',
+        guestEmail: email || '',
+        note,
+        items: normalizedItems,
+        idempotencyKey,
+      },
+    });
+
+    // If initial status should be Completed, we need to update it since createSaleOrderWithItems 
+    // uses 'PendingConfirmation' / 'PendingPayment' by default
+    if (initialStatus === 'Completed') {
+      saleOrder.status = 'Completed';
+      saleOrder.userStatus = 'COMPLETED';
+      saleOrder.history.push({
+        status: 'Completed',
+        action: 'order_completed',
+        description: 'Đơn mua tại chỗ đã thanh toán và hoàn thành',
+        updatedBy: staffId,
+        updatedAt: new Date(),
+      });
+      await saleOrder.save();
+    }
+
+    return res.status(200).json(buildCheckoutSuccessResponse(saleOrder));
+  } catch (error) {
+    console.error('Walk-in Sale Order error:', error);
+    if (error.message === 'OUT_OF_STOCK') {
+      return res.status(400).json({ success: false, message: 'Sản phẩm đã hết hàng hoặc không đủ số lượng.' });
+    }
+    return res.status(500).json({ success: false, message: 'Không thể tạo đơn mua lúc này.' });
+  }
+};
