@@ -736,7 +736,11 @@ const Homepage = ({ initialSection = "" }) => {
   const rentableWithImage = buyProducts
     .filter((item) => hasRealImage(item.imageUrl))
     .filter((item) => Number(item.baseRentPrice || 0) > 0)
-    .filter((item) => !['Apparel', 'Accessories'].includes(String(item.category || '').trim()));
+    .filter((item) => {
+      const categoryMatch = String(item.category || '').trim().toLowerCase();
+      const apparelKeywords = ['apparel', 'accessories', 'clothes', 'shoes', 'áo', 'quần', 'phụ kiện', 'giày', 'vớ', 'tất', 'túi', 'balo', 'bag', 'trang phục'];
+      return !apparelKeywords.some(kw => categoryMatch.includes(kw));
+    });
   const traditionalCandidates = rentableWithImage.filter((item) => isTraditionalCostume(item));
   const displayedBuyProducts = (traditionalCandidates.length > 0 ? traditionalCandidates : rentableWithImage)
     .slice(0, HOMEPAGE_PRODUCT_LIMIT)

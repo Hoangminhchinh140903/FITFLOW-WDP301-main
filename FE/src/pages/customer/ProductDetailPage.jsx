@@ -541,8 +541,10 @@ export default function ProductDetailPage() {
   }, [availableInstances]);
 
   const isRentableItem = useMemo(() => {
-    const categoryMatch = String(product?.category || '').trim();
-    return !['Apparel', 'Accessories'].includes(categoryMatch);
+    const categoryMatch = String(product?.category || '').trim().toLowerCase();
+    const apparelKeywords = ['apparel', 'accessories', 'clothes', 'shoes', 'áo', 'quần', 'phụ kiện', 'giày', 'vớ', 'tất', 'túi', 'balo', 'bag', 'trang phục'];
+    const isApparelOrAccessories = apparelKeywords.some(kw => categoryMatch.includes(kw));
+    return !isApparelOrAccessories;
   }, [product?.category]);
 
   const canSubmitRent = useMemo(() => {
