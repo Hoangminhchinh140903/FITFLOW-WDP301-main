@@ -182,8 +182,8 @@ function CartItemCard({ item, type, onRemove, onDecrease, onIncrease, subtotal }
               <p className="mt-1 text-sm text-slate-500">
                 Size {item.size} • Màu {item.color}
                 {type === 'buy' && item.conditionLevel && (
-                  <span className={`ml-2 rounded-full px-2 py-0.5 text-[11px] font-semibold ${getConditionBadgeClass(item.conditionScore ?? (item.conditionLevel === 'New' ? 100 : 75))}`}>
-                    {formatConditionLabel(item.conditionScore ?? (item.conditionLevel === 'New' ? 100 : 75))}
+                  <span className={`ml-2 rounded-full px-2 py-0.5 text-[11px] font-semibold ${getConditionBadgeClass(item.conditionScore ?? (item.conditionLevel === 'New' ? 100 : 85))}`}>
+                    {formatConditionLabel(item.conditionScore ?? (item.conditionLevel === 'New' ? 100 : 85))}
                   </span>
                 )}
               </p>

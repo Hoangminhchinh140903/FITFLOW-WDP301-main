@@ -1,4 +1,4 @@
-﻿export const INVENTORY_PAGE_SIZE = 10
+export const INVENTORY_PAGE_SIZE = 10
 export const LOW_STOCK_THRESHOLD = 3
 
 export const INSTANCE_STATUS_META = {
@@ -22,14 +22,13 @@ export const INSTANCE_STATUS_ORDER = {
   Sold: 7
 }
 
-export const INSTANCE_CONDITION_SCORE_OPTIONS = [0, 25, 50, 75, 100]
+export const INSTANCE_CONDITION_SCORE_OPTIONS = [85, 95, 100]
 
 export const INSTANCE_CONDITION_FILTER_OPTIONS = [
   { value: '', label: 'Tất cả tình trạng' },
   { value: '100', label: 'Mới' },
-  { value: '75', label: 'Tình trạng tốt' },
-  { value: '50', label: 'Trung bình' },
-  { value: '25', label: 'Cần sửa' }
+  { value: '95', label: 'Tốt' },
+  { value: '85', label: 'Ổn' }
 ]
 
 export const INSTANCE_STATUS_FILTER_OPTIONS = [

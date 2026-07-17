@@ -26,7 +26,7 @@ const CONDITION_LEVEL_ALIASES = {
   Damaged: 'Used'
 };
 const ALLOWED_CONDITION_LEVELS = new Set(['New', 'Used']);
-const ALLOWED_CONDITION_SCORES = new Set([0, 25, 50, 75, 100]);
+const ALLOWED_CONDITION_SCORES = new Set([0, 25, 50, 75, 85, 95, 100]);
 
 const normalizeConditionLevel = (value) => {
   if (value === undefined || value === null || value === '') return '';
@@ -600,8 +600,8 @@ const sanitizeProduct = (product, quantity = {}, lang = 'vi') => {
     description: resolveLocalizedField(product, 'description', lang),
     images,
     imageUrl: images[0] || '',
-    baseRentPrice: prices.baseRentPrice,
-    baseSalePrice: prices.baseSalePrice,
+    baseRentPrice: typeof quantity.minRentPrice === 'number' ? quantity.minRentPrice : prices.baseRentPrice,
+    baseSalePrice: typeof quantity.minSalePrice === 'number' ? quantity.minSalePrice : prices.baseSalePrice,
     depositAmount: prices.depositAmount,
     buyoutValue: prices.buyoutValue,
     likeCount: product.likeCount || 0,
@@ -683,6 +683,16 @@ const getQuantityMap = async (productIds = [], options = {}) => {
             $cond: [{ $in: ['$lifecycleStatus', ['Lost', 'Sold']] }, 0, 1],
           },
         },
+        minSalePrice: {
+          $min: {
+            $cond: [{ $eq: ['$lifecycleStatus', 'Available'] }, '$currentSalePrice', null],
+          },
+        },
+        minRentPrice: {
+          $min: {
+            $cond: [{ $in: ['$lifecycleStatus', ['Lost', 'Sold']] }, null, '$currentRentPrice'],
+          },
+        },
       },
     },
   ]);
@@ -694,6 +704,8 @@ const getQuantityMap = async (productIds = [], options = {}) => {
         totalQuantity: row.totalQuantity || 0,
         availableQuantity: row.availableQuantity || 0,
         rentableQuantity: row.rentableQuantity || 0,
+        minSalePrice: row.minSalePrice,
+        minRentPrice: row.minRentPrice,
       },
     ])
   );
@@ -1801,7 +1813,7 @@ const updateProductInstance = async (req, res) => {
       if (!ALLOWED_CONDITION_SCORES.has(normalizedScore)) {
         return res.status(400).json({
           success: false,
-          message: 'Điểm tình trạng chỉ chấp nhận 0, 25, 50, 75 hoặc 100'
+          message: 'Điểm tình trạng không hợp lệ (hỗ trợ các giá trị cũ và 85, 95, 100)'
         });
       }
       instance.conditionScore = normalizedScore;

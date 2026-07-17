@@ -101,9 +101,9 @@ const formatConditionByScore = (score, fallbackLevel = '') => {
   const normalizedScore = Number(score)
   if (Number.isFinite(normalizedScore)) {
     if (normalizedScore >= 100) return 'Mới (100%)'
-    if (normalizedScore >= 75) return `Tốt (${normalizedScore}%)`
-    if (normalizedScore >= 50) return `Đã qua sử dụng (${normalizedScore}%)`
-    return `Cần lưu ý (${normalizedScore}%)`
+    if (normalizedScore >= 95) return `Tốt (${normalizedScore}%)`
+    if (normalizedScore >= 85) return `Ổn (${normalizedScore}%)`
+    return `Đã qua sử dụng (${normalizedScore}%)`
   }
 
   const normalizedLevel = String(fallbackLevel || '').trim()

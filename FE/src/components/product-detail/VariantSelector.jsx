@@ -62,15 +62,16 @@ export default function VariantSelector({
             {conditionOptions.map((option) => {
               const active = selectedConditionKey === option.key
               return (
-                <button
+                  <button
                   key={option.key}
                   type="button"
+                  disabled={option.disabled}
                   onClick={() => onConditionChange?.(option.key)}
                   className={`inline-flex h-10 items-center justify-center rounded-full border px-4 text-xs font-black uppercase tracking-wider transition focus:outline-none ${
                     active
                       ? 'border-[#10150f] bg-[#10150f] text-[#c9ff3d]'
                       : 'border-[rgba(16,21,15,0.15)] bg-white text-[#10150f] hover:border-[#10150f]'
-                  }`}
+                  } ${option.disabled ? 'opacity-50 cursor-not-allowed hover:border-[rgba(16,21,15,0.15)]' : ''}`}
                   aria-pressed={active}
                 >
                   <span className="truncate">{option.label}</span>

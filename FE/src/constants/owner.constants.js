@@ -133,7 +133,7 @@ export const PRODUCT_LIFECYCLE_STATUS_BADGES = {
 // ============================================================================
 // PRODUCT CONDITION LEVELS
 // ============================================================================
-export const PRODUCT_CONDITION_SCORES = [0, 25, 50, 75, 100]
+export const PRODUCT_CONDITION_SCORES = [85, 95, 100]
 
 export const PRODUCT_CONDITION_LEVELS = {
   NEW: 'New',

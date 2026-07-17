@@ -41,7 +41,7 @@ export const resolveConditionScore = (item) => {
 
   const level = String(item?.conditionLevel || item?.level || '').trim().toLowerCase()
   if (level === 'new' || level === 'good') return 100
-  if (level === 'used') return 75
+  if (level === 'used') return 85
   if (level === 'damaged') return 50
   return null
 }
@@ -49,25 +49,23 @@ export const resolveConditionScore = (item) => {
 export const toConditionLevel = (score) => {
   const value = Number(score)
   if (!Number.isFinite(value)) return 'New'
-  return value >= 75 ? 'New' : 'Used'
+  return value >= 85 ? 'New' : 'Used'
 }
 
 export const getConditionLabel = (score) => {
   const value = Number(score)
   if (!Number.isFinite(value)) return 'Không rõ'
   if (value >= 100) return `Mới (${value}%)`
-  if (value >= 75) return `Tình trạng tốt (${value}%)`
-  if (value >= 50) return `Trung bình (${value}%)`
-  return `Tình trạng tốt (${value}%)`
+  if (value >= 95) return `Tốt (${value}%)`
+  return `Ổn (${value}%)`
 }
 
 export const getConditionClass = (score) => {
   const value = Number(score)
   if (!Number.isFinite(value)) return 'bg-slate-100 text-slate-700'
   if (value >= 100) return 'bg-emerald-100 text-emerald-700'
-  if (value >= 75) return 'bg-sky-100 text-sky-700'
-  if (value >= 50) return 'bg-amber-100 text-amber-700'
-  return 'bg-rose-100 text-rose-700'
+  if (value >= 95) return 'bg-sky-100 text-sky-700'
+  return 'bg-amber-100 text-amber-700'
 }
 
 export const normalizeSizeStock = (product, toArray) => {

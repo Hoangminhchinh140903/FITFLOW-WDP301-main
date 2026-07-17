@@ -427,6 +427,7 @@ export default function ProductDetailPage() {
       const rentPrice = Number(instance?.currentRentPrice ?? 0);
       const salePrice = Number(instance?.currentSalePrice ?? 0);
       const key = `${score}__${level}`;
+      const isPurchasable = instance?.isPurchasable;
 
       if (!grouped.has(key)) {
         grouped.set(key, {
@@ -437,6 +438,7 @@ export default function ProductDetailPage() {
           salePrice,
           instanceId: instance?._id || null,
           count: 1,
+          hasPurchasable: isPurchasable,
         });
         return;
       }
@@ -450,6 +452,7 @@ export default function ProductDetailPage() {
         salePrice: cheaperSale ? salePrice : current.salePrice,
         instanceId: cheaperRent ? (instance?._id || current.instanceId) : current.instanceId,
         count: Number(current.count || 0) + 1,
+        hasPurchasable: current.hasPurchasable || isPurchasable,
       });
     });
 
@@ -458,6 +461,7 @@ export default function ProductDetailPage() {
       .map((item) => ({
         ...item,
         label: formatConditionLabel(item.score),
+        disabled: !item.hasPurchasable,
       }));
   }, [filteredInstancesForSelection]);
 
@@ -471,8 +475,10 @@ export default function ProductDetailPage() {
       setSelectedConditionKey("");
       return;
     }
-    if (!selectedConditionKey || !conditionOptions.some((option) => option.key === selectedConditionKey)) {
-      setSelectedConditionKey(conditionOptions[0].key);
+    const isSelectedValid = selectedConditionKey && conditionOptions.some((option) => option.key === selectedConditionKey && !option.disabled);
+    if (!isSelectedValid) {
+      const firstEnabled = conditionOptions.find(opt => !opt.disabled);
+      setSelectedConditionKey(firstEnabled ? firstEnabled.key : conditionOptions[0].key);
     }
   }, [conditionOptions, selectedConditionKey]);
 
@@ -550,9 +556,17 @@ export default function ProductDetailPage() {
   const canSubmitRent = useMemo(() => {
     if (!isRentableItem) return false;
     if (!variantReady) return false;
-    if (rentableQuantity <= 0) return false;
+    
+    // Check if there are any instances that are actually rentable right now
+    // (excluding Washing and Repair, as requested by the owner)
+    if (!Array.isArray(availableInstances) || availableInstances.length === 0) return false;
+    const hasRentableInstance = availableInstances.some(
+      (inst) => !['Washing', 'Repair', 'Lost', 'Sold'].includes(inst.lifecycleStatus)
+    );
+    if (!hasRentableInstance) return false;
+    
     return true;
-  }, [variantReady, rentableQuantity, isRentableItem]);
+  }, [variantReady, availableInstances, isRentableItem]);
 
   // Chỉ cho Mua khi thực sự có instance Available (đồ đang thuê/reserved không bán được)
   const canBuy = useMemo(() => {
