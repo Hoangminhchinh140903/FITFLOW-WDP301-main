@@ -38,7 +38,7 @@ const RENT_MEGA_MENU = [
   {
     title: "Dịch vụ thuê",
     items: [
-      { label: "Dịch vụ thuê vợt", to: "/buy?purpose=rent&openBooking=1" },
+      { label: "Dịch vụ thuê vợt", to: "/buy?purpose=rent" },
     ],
   },
   {
@@ -288,7 +288,7 @@ export default function Header({ active = "" }) {
                 onChange={(event) => setSearchValue(event.target.value)}
               />
             </form>
-            <Link to="/buy?purpose=rent&openBooking=1" className="site-cta">
+            <Link to="/buy?purpose=rent" className="site-cta">
               {LABELS.cta}
             </Link>
           </div>

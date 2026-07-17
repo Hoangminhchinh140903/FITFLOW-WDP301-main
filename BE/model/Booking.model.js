@@ -27,6 +27,14 @@ const bookingSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    rentStartDate: {
+      type: Date,
+      required: true,
+    },
+    rentEndDate: {
+      type: Date,
+      required: true,
+    },
     category: {
       type: String,
       required: true,

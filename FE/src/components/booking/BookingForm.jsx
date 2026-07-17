@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createBookingRequest, getRentCategoriesRequest } from '../../api/booking.api';
 import { useAuth } from '../../hooks/useAuth';
 import TimeSelector from './TimeSelector';
@@ -30,8 +30,10 @@ export default function BookingForm({ onCancel, onSuccess, selectedProduct = nul
     name: '',
     phone: '',
     email: '',
-    date: '',
-    time: '14:00',
+    date: '', // pickup date
+    time: '14:00', // pickup time
+    rentStartDate: '',
+    rentEndDate: '',
     category: '',
     note: '',
   });
@@ -98,10 +100,10 @@ export default function BookingForm({ onCancel, onSuccess, selectedProduct = nul
   useEffect(() => {
     if (!selectedProduct) return;
     setForm((prev) => {
-      const selectedLine = `Trang phục muốn thử: ${String(selectedProduct?.name || '').trim()}`;
+      const selectedLine = `Sản phẩm muốn thuê: ${String(selectedProduct?.name || '').trim()}`;
       const cleanedNote = String(prev.note || '')
         .split('\n')
-        .filter((line) => !line.trim().toLowerCase().startsWith('sản phẩm muốn thử:'))
+        .filter((line) => !line.trim().toLowerCase().startsWith('trang phục muốn thử:') && !line.trim().toLowerCase().startsWith('sản phẩm muốn thuê:'))
         .join('\n')
         .trim();
       return {
@@ -128,19 +130,41 @@ export default function BookingForm({ onCancel, onSuccess, selectedProduct = nul
     else if (!phoneRegex.test(form.phone.trim())) next.phone = 'Số điện thoại không hợp lệ';
     if (!form.email.trim()) next.email = 'Email là bắt buộc';
     else if (!emailRegex.test(form.email.trim())) next.email = 'Email không hợp lệ';
-    if (!form.date) next.date = 'Vui lòng chọn ngày đến';
-    else if (form.date < today) next.date = 'Ngày đến không được nhỏ hơn hôm nay';
-    if (!form.time) next.time = 'Vui lòng chọn giờ đến';
+    
+    if (!form.rentStartDate) next.rentStartDate = 'Vui lòng chọn ngày thuê';
+    else if (form.rentStartDate < today) next.rentStartDate = 'Ngày thuê không được nhỏ hơn hôm nay';
+
+    if (!form.rentEndDate) next.rentEndDate = 'Vui lòng chọn ngày trả';
+    else if (form.rentEndDate < form.rentStartDate) next.rentEndDate = 'Ngày trả không được nhỏ hơn ngày thuê';
+
+    if (!form.date) next.date = 'Vui lòng chọn ngày lấy vợt';
+    else if (form.date < today) next.date = 'Ngày lấy vợt không được nhỏ hơn hôm nay';
+    
+    if (!form.time) next.time = 'Vui lòng chọn giờ lấy vợt';
     else {
       const timeInMinutes = toTimeMinutes(form.time);
       const minTime = toTimeMinutes(BOOKING_MIN_TIME);
       const maxTime = toTimeMinutes(BOOKING_MAX_TIME);
       if (timeInMinutes === null || minTime === null || maxTime === null) {
-        next.time = 'Giờ đến không hợp lệ';
+        next.time = 'Giờ lấy vợt không hợp lệ';
       } else if (timeInMinutes < minTime || timeInMinutes > maxTime) {
-        next.time = `Giờ đến chỉ từ ${BOOKING_MIN_TIME} đến ${BOOKING_MAX_TIME}`;
+        next.time = `Giờ lấy vợt chỉ từ ${BOOKING_MIN_TIME} đến ${BOOKING_MAX_TIME}`;
       }
     }
+
+    // Check pickup date against rent start date
+    if (form.rentStartDate && form.date && !next.date) {
+      const rentStart = new Date(form.rentStartDate);
+      rentStart.setHours(0, 0, 0, 0);
+
+      const pickupDate = new Date(form.date);
+      pickupDate.setHours(0, 0, 0, 0);
+
+      if (pickupDate > rentStart) {
+        next.date = 'Ngày lấy vợt không được sau ngày thuê';
+      }
+    }
+
     return next;
   }, [form, today]);
 
@@ -176,6 +200,8 @@ export default function BookingForm({ onCancel, onSuccess, selectedProduct = nul
       email: form.email.trim().toLowerCase(),
       date: form.date,
       time: form.time,
+      rentStartDate: form.rentStartDate,
+      rentEndDate: form.rentEndDate,
       category: form.category,
       productId: String(selectedProduct?._id || '').trim() || undefined,
       productName: String(selectedProduct?.name || '').trim() || undefined,
@@ -226,7 +252,7 @@ export default function BookingForm({ onCancel, onSuccess, selectedProduct = nul
               ) : null}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-medium text-amber-700">Trang phục đã chọn</p>
+              <p className="text-xs font-medium text-amber-700">Sản phẩm đã chọn</p>
               <p className="truncate text-sm font-semibold text-slate-900">{selectedProduct.name}</p>
             </div>
           </div>
@@ -277,11 +303,39 @@ export default function BookingForm({ onCancel, onSuccess, selectedProduct = nul
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
-        <h3 className="mb-3 text-sm font-bold text-slate-900">Lịch hẹn</h3>
+        <h3 className="mb-3 text-sm font-bold text-slate-900">Thời gian thuê</h3>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-slate-700">Ngày thuê</label>
+            <input
+              type="date"
+              min={today}
+              value={form.rentStartDate}
+              onChange={handleFieldChange('rentStartDate')}
+              className={fieldClass}
+            />
+            {shouldShowError('rentStartDate') && errors.rentStartDate ? <p className="mt-1 text-xs font-medium text-rose-600">{errors.rentStartDate}</p> : null}
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-slate-700">Ngày trả</label>
+            <input
+              type="date"
+              min={form.rentStartDate || today}
+              value={form.rentEndDate}
+              onChange={handleFieldChange('rentEndDate')}
+              className={fieldClass}
+            />
+            {shouldShowError('rentEndDate') && errors.rentEndDate ? <p className="mt-1 text-xs font-medium text-rose-600">{errors.rentEndDate}</p> : null}
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-4">
+        <h3 className="mb-3 text-sm font-bold text-slate-900">Lịch nhận vợt tại cửa hàng</h3>
 
         <div>
           <div>
-            <label className="mb-1 block text-sm font-semibold text-slate-700">Ngày đến</label>
+            <label className="mb-1 block text-sm font-semibold text-slate-700">Ngày lấy vợt</label>
             <input
               type="date"
               min={today}
@@ -326,7 +380,7 @@ export default function BookingForm({ onCancel, onSuccess, selectedProduct = nul
           disabled={isSubmitDisabled}
           className="inline-flex w-full items-center justify-center rounded-xl bg-amber-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:scale-[1.01] hover:bg-amber-600 disabled:cursor-not-allowed disabled:bg-slate-300"
         >
-          {submitting ? 'Đang xử lý...' : 'Đặt lịch thử miễn phí'}
+          {submitting ? 'Đang xử lý...' : 'Đặt lịch thuê vợt'}
         </button>
 
         <button

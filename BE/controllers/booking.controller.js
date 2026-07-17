@@ -36,14 +36,18 @@ const createBooking = async (req, res) => {
       productName = '',
       productImage = '',
       note = '',
+      rentStartDate = '',
+      rentEndDate = '',
     } = req.body || {};
 
     const normalizedName = String(name).trim();
     const normalizedPhone = normalizePhone(phone);
     const normalizedEmail = normalizeEmail(email);
-    const normalizedDate = new Date(date);
+    const normalizedDate = new Date(date); // Pickup date
+    const normalizedRentStartDate = new Date(rentStartDate);
+    const normalizedRentEndDate = new Date(rentEndDate);
 
-    if (!normalizedName || !normalizedPhone || !normalizedEmail || !date || !time || !category) {
+    if (!normalizedName || !normalizedPhone || !normalizedEmail || !date || !time || !category || !rentStartDate || !rentEndDate) {
       return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin bắt buộc' });
     }
     if (!isValidPhone(normalizedPhone)) {
@@ -67,6 +71,28 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ success: false, message: `Giờ hẹn chỉ được chọn từ ${BOOKING_MIN_TIME} đến ${BOOKING_MAX_TIME}` });
     }
 
+    if (Number.isNaN(normalizedRentStartDate.getTime()) || Number.isNaN(normalizedRentEndDate.getTime())) {
+      return res.status(400).json({ success: false, message: 'Ngày thuê hoặc ngày trả không hợp lệ' });
+    }
+    
+    // Normalize rent start and end dates (set to start of day)
+    const rentStart = new Date(normalizedRentStartDate);
+    rentStart.setHours(0, 0, 0, 0);
+    const rentEnd = new Date(normalizedRentEndDate);
+    rentEnd.setHours(0, 0, 0, 0);
+
+    if (rentEnd < rentStart) {
+      return res.status(400).json({ success: false, message: 'Ngày trả không được nhỏ hơn ngày thuê' });
+    }
+
+    // Pickup date cannot be after rent date
+    const pickupDateOnly = new Date(normalizedDate);
+    pickupDateOnly.setHours(0, 0, 0, 0);
+
+    if (pickupDateOnly > rentStart) {
+      return res.status(400).json({ success: false, message: 'Ngày lấy vợt không được sau ngày thuê' });
+    }
+
     const normalizedProductId = String(productId || '').trim();
     const validProductId = mongoose.Types.ObjectId.isValid(normalizedProductId)
       ? new mongoose.Types.ObjectId(normalizedProductId)
@@ -84,6 +110,8 @@ const createBooking = async (req, res) => {
       productImage: String(productImage || '').trim(),
       note: String(note || '').trim(),
       status: 'pending',
+      rentStartDate: rentStart,
+      rentEndDate: rentEnd,
     });
 
     return res.status(201).json({ success: true, data: created });

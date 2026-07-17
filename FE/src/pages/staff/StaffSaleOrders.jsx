@@ -6,9 +6,7 @@ import { getOwnerOrdersApi, updateOwnerOrderStatusApi, getOwnerOrderByIdApi } fr
 const statusLabels = {
   PendingConfirmation: 'Chờ xác nhận',
   Confirmed: 'Đã xác nhận',
-  Processing: 'Đang xử lý',
   Shipping: 'Đang giao',
-  Delivered: 'Đã giao',
   Completed: 'Hoàn tất',
   Cancelled: 'Đã hủy',
   Refunded: 'Đã hoàn tiền',
@@ -18,9 +16,7 @@ const statusLabels = {
 const statusColors = {
   PendingConfirmation: 'bg-amber-100 text-amber-800',
   Confirmed: 'bg-indigo-100 text-indigo-800',
-  Processing: 'bg-blue-100 text-blue-800',
   Shipping: 'bg-violet-100 text-violet-800',
-  Delivered: 'bg-emerald-100 text-emerald-800',
   Completed: 'bg-green-200 text-green-800',
   Cancelled: 'bg-slate-200 text-slate-700',
   Refunded: 'bg-fuchsia-100 text-fuchsia-800',
@@ -147,7 +143,7 @@ export default function StaffSaleOrders() {
   const handleUpdateStatus = async (orderId, newStatus) => {
     try {
       setActionLoading(true)
-      const res = await updateOwnerOrderStatusApi(orderId, { status: newStatus })
+      const res = await updateOwnerOrderStatusApi(orderId, newStatus)
       if (res?.data) {
         showSuccess('Cập nhật trạng thái thành công')
         fetchOrders()
@@ -208,9 +204,7 @@ export default function StaffSaleOrders() {
                   <option value="">Tất cả</option>
                   <option value="PendingConfirmation">Chờ xác nhận</option>
                   <option value="Confirmed">Đã xác nhận</option>
-                  <option value="Processing">Đang xử lý</option>
                   <option value="Shipping">Đang giao</option>
-                  <option value="Delivered">Đã giao</option>
                   <option value="Completed">Hoàn tất</option>
                   <option value="Cancelled">Đã hủy</option>
                 </select>
@@ -401,33 +395,33 @@ export default function StaffSaleOrders() {
                     </button>
                   )}
                   {selectedOrder.status === 'Confirmed' && (
-                    <button
-                      onClick={() => handleUpdateStatus(selectedOrder._id, 'Processing')}
-                      disabled={actionLoading}
-                      className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
-                    >
-                      Đang xử lý
-                    </button>
-                  )}
-                  {selectedOrder.status === 'Processing' && (
-                    <button
-                      onClick={() => handleUpdateStatus(selectedOrder._id, 'Shipping')}
-                      disabled={actionLoading}
-                      className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-700 disabled:opacity-50"
-                    >
-                      Đang giao
-                    </button>
+                    <>
+                      <button
+                        onClick={() => handleUpdateStatus(selectedOrder._id, 'Shipping')}
+                        disabled={actionLoading}
+                        className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-700 disabled:opacity-50"
+                      >
+                        Đang giao
+                      </button>
+                      <button
+                        onClick={() => handleUpdateStatus(selectedOrder._id, 'Completed')}
+                        disabled={actionLoading}
+                        className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50"
+                      >
+                        Giao hàng thành công
+                      </button>
+                    </>
                   )}
                   {selectedOrder.status === 'Shipping' && (
                     <button
-                      onClick={() => handleUpdateStatus(selectedOrder._id, 'Delivered')}
+                      onClick={() => handleUpdateStatus(selectedOrder._id, 'Completed')}
                       disabled={actionLoading}
                       className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50"
                     >
-                      Đã giao
+                      Giao hàng thành công
                     </button>
                   )}
-                  {['PendingConfirmation', 'Confirmed', 'Processing'].includes(selectedOrder.status) && (
+                  {['PendingConfirmation', 'Confirmed'].includes(selectedOrder.status) && (
                     <button
                       onClick={() => handleUpdateStatus(selectedOrder._id, 'Cancelled')}
                       disabled={actionLoading}

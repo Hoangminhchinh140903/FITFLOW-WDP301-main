@@ -179,7 +179,7 @@ export default function ProductCard({
                 cursor: 'pointer', transition: 'background .15s',
               }}
             >
-              Đặt lịch thử
+              Đặt lịch thuê
             </button>
           )}
         </div>
