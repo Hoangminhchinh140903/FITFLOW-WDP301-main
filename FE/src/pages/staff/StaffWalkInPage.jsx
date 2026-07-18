@@ -18,7 +18,16 @@ const normalizeSizeValue = (value) => String(value || '').trim()
 const getProductSizeOptions = (product = {}) => {
   const direct = Array.isArray(product?.sizeOptions) ? product.sizeOptions : []
   const rows = Array.isArray(product?.sizes) ? product.sizes.map((row) => (typeof row === 'object' ? row?.size : row)) : []
-  const merged = [...direct, ...rows]
+  
+  const cat = String(product?.category || '').toLowerCase().trim()
+  const isShoes = ['shoes'].includes(cat)
+  const isApparel = ['apparel', 'clothes'].includes(cat)
+  
+  let baseSizes = []
+  if (isShoes) baseSizes = ['36', '37', '38', '39', '40', '41', '42', '43']
+  else if (isApparel) baseSizes = ['S', 'M', 'L', 'XL', 'XXL']
+
+  const merged = [...baseSizes, ...direct, ...rows]
     .map((size) => normalizeSizeValue(size))
     .filter(Boolean)
   return [...new Set(merged)]
@@ -62,14 +71,7 @@ export default function StaffWalkInPage() {
   const [sizeSelectionByProductId, setSizeSelectionByProductId] = useState({})
   const [items, setItems] = useState([]) // rent: { itemKey, productId, name, image, rentPrice, baseSalePrice, size } | buy: { itemKey, productId, name, image, unitPrice, quantity, size }
 
-  // Size advisor (for Buy Order)
-  const [advisorItemKey, setAdvisorItemKey] = useState('')
-  const [advisorGender, setAdvisorGender] = useState('female')
-  const [advisorHeightCm, setAdvisorHeightCm] = useState('')
-  const [advisorWeightKg, setAdvisorWeightKg] = useState('')
-  const [advisorResult, setAdvisorResult] = useState(null)
-  const [advisorError, setAdvisorError] = useState('')
-  const [advisorLoading, setAdvisorLoading] = useState(false)
+  // Size advisor removed per request
 
   // Submission
   const [loading, setLoading] = useState(false)
@@ -233,46 +235,6 @@ export default function StaffWalkInPage() {
     setSizeSelectionByProductId((prev) => ({ ...prev, [product._id]: '' }))
     setProductQuery('')
     setProductResults([])
-  }
-
-  useEffect(() => {
-    if (advisorItemKey) {
-      setAdvisorResult(null)
-      setAdvisorError('')
-    } else {
-      setAdvisorResult(null)
-      setAdvisorError('')
-      setAdvisorHeightCm('')
-      setAdvisorWeightKg('')
-    }
-  }, [advisorItemKey])
-
-  const handleRecommendSizeForStaff = async () => {
-    if (!advisorItemKey) return
-    setAdvisorError('')
-    setAdvisorResult(null)
-    if (!advisorHeightCm || !advisorWeightKg) {
-      setAdvisorError('Vui lòng nhập chiều cao, cân nặng')
-      return
-    }
-    setAdvisorLoading(true)
-    try {
-      const item = items.find((i) => i.itemKey === advisorItemKey)
-      if (!item) throw new Error('Không tìm thấy sản phẩm')
-      const payload = {
-        productId: item.productId,
-        gender: advisorGender,
-        heightCm: Number(advisorHeightCm),
-        weightKg: Number(advisorWeightKg),
-      }
-      const data = await axiosClient.post('/size-guide/recommend', payload).then((r) => r.data)
-      setAdvisorResult(data?.data?.recommendedSize || null)
-      if (!data?.data?.recommendedSize) setAdvisorError('Không tìm thấy size phù hợp.')
-    } catch (err) {
-      setAdvisorError(err.response?.data?.message || err.message || 'Lỗi tư vấn size')
-    } finally {
-      setAdvisorLoading(false)
-    }
   }
 
   const removeProduct = (itemKey) => setItems((prev) => prev.filter((i) => i.itemKey !== itemKey))
@@ -650,7 +612,7 @@ export default function StaffWalkInPage() {
                               className="h-8 rounded-lg border-slate-200 text-xs px-2 focus:ring-emerald-400 outline-none"
                             >
                               <option value="">Chọn Size</option>
-                              {(sizeOptions.length > 0 ? sizeOptions : (['shoes'].includes(String(p.category || '').toLowerCase().trim()) ? ['36', '37', '38', '39', '40', '41', '42', '43'] : ['S', 'M', 'L', 'XL', 'XXL'])).map(s => {
+                              {sizeOptions.map(s => {
                                 const stock = getSizeStock(p, s)
                                 return (
                                   <option key={s} value={s} disabled={orderType === 'buy' && stock === 0}>
@@ -676,81 +638,7 @@ export default function StaffWalkInPage() {
               )}
             </div>
 
-            {/* Size advisor (Only for Buy Order) */}
-            {orderType === 'buy' && items.length > 0 && (
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 max-w-lg">
-                <p className="mb-3 text-sm font-semibold text-slate-700">Tư vấn size nhanh tại quầy</p>
-                <div className="space-y-3">
-                  <select
-                    value={advisorItemKey}
-                    onChange={(e) => setAdvisorItemKey(e.target.value)}
-                    className="h-10 w-full rounded-xl border-slate-200 text-sm focus:border-emerald-400 focus:ring-emerald-100"
-                  >
-                    <option value="">-- Chọn sản phẩm cần tư vấn --</option>
-                    {items.map(i => (
-                      <option key={i.itemKey} value={i.itemKey}>{i.name}</option>
-                    ))}
-                  </select>
-
-                  {advisorItemKey && (
-                    <>
-                      <div className="grid grid-cols-3 gap-3">
-                        <div>
-                          <label className="mb-1 block text-xs text-slate-500">Giới tính</label>
-                          <select
-                            value={advisorGender}
-                            onChange={(e) => setAdvisorGender(e.target.value)}
-                            className="h-10 w-full rounded-xl border-slate-200 text-sm focus:border-emerald-400 focus:ring-emerald-100"
-                          >
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
-                            <option value="unisex">Unisex</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="mb-1 block text-xs text-slate-500">Chiều cao (cm)</label>
-                          <input
-                            type="number"
-                            value={advisorHeightCm}
-                            onChange={(e) => setAdvisorHeightCm(e.target.value)}
-                            className="h-10 w-full rounded-xl border-slate-200 text-sm focus:border-emerald-400 focus:ring-emerald-100"
-                          />
-                        </div>
-                        <div>
-                          <label className="mb-1 block text-xs text-slate-500">Cân nặng (kg)</label>
-                          <input
-                            type="number"
-                            value={advisorWeightKg}
-                            onChange={(e) => setAdvisorWeightKg(e.target.value)}
-                            className="h-10 w-full rounded-xl border-slate-200 text-sm focus:border-emerald-400 focus:ring-emerald-100"
-                          />
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleRecommendSizeForStaff}
-                        disabled={advisorLoading}
-                        className="h-10 w-full rounded-xl bg-slate-900 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
-                      >
-                        {advisorLoading ? 'Đang phân tích...' : 'Tư vấn Size'}
-                      </button>
-                      {advisorResult && (
-                        <div className="rounded-xl bg-emerald-100 p-3 text-center border border-emerald-200">
-                          <p className="text-sm text-emerald-800">
-                            Size đề xuất: <strong className="text-emerald-900 text-lg">{advisorResult}</strong>
-                          </p>
-                        </div>
-                      )}
-                      {advisorError && (
-                        <p className="text-xs text-red-500 text-center">{advisorError}</p>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-
-                {/* Selected items */}
+            {/* Selected items */}
             {items.length > 0 && (
               <div className="space-y-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">

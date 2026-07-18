@@ -1,11 +1,14 @@
 import {
   cancelMySaleOrderRequest,
   checkoutRequest,
+  createWalkInSaleOrderRequest,
   getGuestSaleOrderByIdRequest,
   getMySaleOrderByIdRequest,
   getMySaleOrdersRequest,
   guestCheckoutRequest,
-  createWalkInSaleOrderRequest,
+  returnMySaleOrderRequest,
+  cancelGuestSaleOrderRequest,
+  returnGuestSaleOrderRequest,
 } from '../api/order.api'
 
 export const checkoutApi = async (payload) => {
@@ -28,13 +31,28 @@ export const getMySaleOrderByIdApi = async (id) => {
   return response.data
 }
 
-export const cancelMySaleOrderApi = async (id) => {
-  const response = await cancelMySaleOrderRequest(id)
+export const cancelMySaleOrderApi = async (id, payload) => {
+  const response = await cancelMySaleOrderRequest(id, payload)
+  return response.data
+}
+
+export const returnMySaleOrderApi = async (id, payload) => {
+  const response = await returnMySaleOrderRequest(id, payload)
   return response.data
 }
 
 export const getGuestSaleOrderByIdApi = async (id, token) => {
   const response = await getGuestSaleOrderByIdRequest(id, token)
+  return response.data
+}
+
+export const cancelGuestSaleOrderApi = async (id, payload) => {
+  const response = await cancelGuestSaleOrderRequest(id, payload)
+  return response.data
+}
+
+export const returnGuestSaleOrderApi = async (id, payload) => {
+  const response = await returnGuestSaleOrderRequest(id, payload)
   return response.data
 }
 

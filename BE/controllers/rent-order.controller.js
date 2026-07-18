@@ -29,7 +29,7 @@ const {
     extractBearerToken,
 } = require('../utils/jwt');
 const { frontendUrl } = require('../config/app.config');
-const { sendRentOrderConfirmationEmail } = require('../services/mailService');
+const { sendRentOrderConfirmationEmail, sendRentOrderCancelEmail } = require('../services/mailService');
 const {
     isValidEmail,
     isValidPhone,
@@ -1322,6 +1322,8 @@ exports.cancelRentOrder = async (req, res) => {
         txOptions = useTransaction ? { session } : {};
 
         const before = snapshotOrderForAudit(order);
+        const reason = String(req.body.reason || '').trim();
+        order.cancelReason = reason;
         order.status = 'Cancelled';
         await order.save(txOptions);
 
@@ -1347,10 +1349,17 @@ exports.cancelRentOrder = async (req, res) => {
 
         await auditOrderChange(req, 'orders_rent.order.cancel', order._id, before, snapshotOrderForAudit(order));
 
+        const detail = await fetchOrderDetail(id);
+        
+        if (isStaff) {
+            // Gửi email báo hủy cho khách khi staff hủy
+            sendRentOrderCancelEmail(detail, reason).catch(err => console.error('Failed to send cancel email:', err));
+        }
+
         return res.json({
             success: true,
             message: 'Huy don thue thanh cong',
-            data: await fetchOrderDetail(id)
+            data: detail
         });
     } catch (error) {
         if (session) {
@@ -2871,6 +2880,8 @@ exports.cancelGuestRentOrder = async (req, res) => {
         ({ session, useTransaction } = await startTransactionIfAvailable());
         txOptions = useTransaction ? { session } : {};
 
+        const reason = String(req.body.reason || '').trim();
+        order.cancelReason = reason;
         order.status = 'Cancelled';
         await order.save(txOptions);
 

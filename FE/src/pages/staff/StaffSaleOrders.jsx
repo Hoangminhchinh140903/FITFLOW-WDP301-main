@@ -9,6 +9,7 @@ const statusLabels = {
   Shipping: 'Đang giao',
   Completed: 'Hoàn tất',
   Cancelled: 'Đã hủy',
+  ReturnRequested: 'Yêu cầu trả hàng',
   Refunded: 'Đã hoàn tiền',
   Returned: 'Đã trả hàng'
 }
@@ -19,14 +20,15 @@ const statusColors = {
   Shipping: 'bg-violet-100 text-violet-800',
   Completed: 'bg-green-200 text-green-800',
   Cancelled: 'bg-slate-200 text-slate-700',
+  ReturnRequested: 'bg-orange-100 text-orange-800',
   Refunded: 'bg-fuchsia-100 text-fuchsia-800',
   Returned: 'bg-rose-100 text-rose-800'
 }
 
-const getCustomerText = (customer) => {
-  if (!customer) return 'N/A'
-  if (typeof customer === 'string') return customer
-  if (typeof customer === 'object') {
+const getCustomerText = (order) => {
+  if (!order) return 'N/A'
+  const customer = order.customerId
+  if (customer && typeof customer === 'object') {
     const name = customer.name || ''
     const phone = customer.phone || ''
     const email = customer.email || ''
@@ -35,8 +37,19 @@ const getCustomerText = (customer) => {
     if (name) return name
     if (phone) return phone
     if (email) return email
-    if (customer._id) return customer._id
   }
+  
+  // Fallback for guest orders
+  const guestName = order.guestName || order.shippingName || ''
+  const guestPhone = order.shippingPhone || ''
+  const guestEmail = order.guestEmail || ''
+  if (guestName && guestPhone) return `${guestName} - ${guestPhone} (Khách lẻ)`
+  if (guestName && guestEmail) return `${guestName} - ${guestEmail} (Khách lẻ)`
+  if (guestName) return `${guestName} (Khách lẻ)`
+  
+  if (customer && typeof customer === 'string') return customer
+  if (customer && customer._id) return customer._id
+  
   return 'N/A'
 }
 
@@ -140,10 +153,12 @@ export default function StaffSaleOrders() {
     setPage(1)
   }, [filterStatus, limit])
 
-  const handleUpdateStatus = async (orderId, newStatus) => {
+  const [cancelModal, setCancelModal] = useState({ show: false, orderId: null, reasonType: 'not_as_expected', reasonText: '' })
+
+  const handleUpdateStatus = async (orderId, newStatus, payload = {}) => {
     try {
       setActionLoading(true)
-      const res = await updateOwnerOrderStatusApi(orderId, newStatus)
+      const res = await updateOwnerOrderStatusApi(orderId, newStatus, payload)
       if (res?.data) {
         showSuccess('Cập nhật trạng thái thành công')
         fetchOrders()
@@ -158,6 +173,18 @@ export default function StaffSaleOrders() {
     }
   }
 
+  const confirmCancelOrder = () => {
+    const finalReason = cancelModal.reasonText;
+      
+    if (!finalReason.trim()) {
+      setError('Vui lòng nhập lý do hủy đơn')
+      return
+    }
+    handleUpdateStatus(cancelModal.orderId, 'Cancelled', { reason: finalReason }).then(() => {
+      setCancelModal({ show: false, orderId: null, reasonType: 'other', reasonText: '' })
+    })
+  }
+
   const statusSummary = useMemo(() => {
     return orders.reduce((acc, order) => {
       acc[order.status] = (acc[order.status] || 0) + 1
@@ -167,6 +194,51 @@ export default function StaffSaleOrders() {
 
   return (
     <div className="min-h-screen bg-slate-100/80">
+      {/* Notification Toast */}
+      {actionSuccess && (
+        <div className="fixed bottom-6 right-6 z-50 rounded-xl bg-slate-900 text-white px-6 py-4 shadow-xl flex items-center gap-3">
+          <div className="h-2 w-2 rounded-full bg-green-400"></div>
+          <span className="font-medium">{actionSuccess}</span>
+        </div>
+      )}
+      
+      {/* Cancel Order Modal */}
+      {cancelModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-900">Hủy đơn hàng</h3>
+            <p className="mt-2 mb-4 text-sm text-slate-500">Vui lòng nhập lý do hủy đơn hàng này.</p>
+            <div className="space-y-3">
+              <textarea
+                className="w-full rounded-xl border border-slate-200 p-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                rows="4"
+                placeholder="Nhập lý do chi tiết..."
+                value={cancelModal.reasonText}
+                onChange={(e) => setCancelModal({ ...cancelModal, reasonText: e.target.value })}
+              ></textarea>
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setCancelModal({ show: false, orderId: null, reasonType: 'not_as_expected', reasonText: '' })}
+                className="flex-1 rounded-xl bg-slate-100 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+                disabled={actionLoading}
+              >
+                Đóng
+              </button>
+              <button
+                type="button"
+                onClick={confirmCancelOrder}
+                className="flex-1 rounded-xl bg-red-600 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+                disabled={actionLoading}
+              >
+                {actionLoading ? 'Đang xử lý...' : 'Xác nhận hủy'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-6">
       {/* Bộ lọc */}
       <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
@@ -242,13 +314,6 @@ export default function StaffSaleOrders() {
         </div>
       </div>
 
-      {actionSuccess && (
-        <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 shadow-sm">
-          <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
-          {actionSuccess}
-        </div>
-      )}
-
       {error && (
         <div className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600 shadow-sm">
           <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
@@ -291,7 +356,7 @@ export default function StaffSaleOrders() {
                         {displayOrderCode(order)}
                       </p>
                       <p className="mt-3 text-sm font-medium text-slate-700">
-                        Khách hàng: {getCustomerText(order.customerId)}
+                        Khách hàng: {getCustomerText(order)}
                       </p>
                       <p className="mt-1 text-sm text-slate-500">
                         Tạo lúc: {formatDateTime(order.createdAt)}
@@ -334,6 +399,13 @@ export default function StaffSaleOrders() {
                 </div>
               </div>
 
+              {selectedOrder.cancelReason && (
+                <div className="mt-4 rounded-2xl bg-red-50 p-4 border border-red-100">
+                  <p className="text-sm font-semibold text-red-800">Lý do hủy / trả hàng:</p>
+                  <p className="mt-1 text-sm text-red-600">{selectedOrder.cancelReason}</p>
+                </div>
+              )}
+
               <div className="mt-5 space-y-5">
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
                   <div className="flex items-center justify-between gap-3">
@@ -346,7 +418,7 @@ export default function StaffSaleOrders() {
                       Xem chi tiết
                     </button>
                   </div>
-                  <p className="mt-3 text-base font-semibold text-slate-950">{getCustomerText(selectedOrder.customerId)}</p>
+                  <p className="mt-1 font-medium text-slate-900">{getCustomerText(selectedOrder)}</p>
                 </div>
 
                 {/* Sản phẩm trong đơn */}
@@ -403,13 +475,6 @@ export default function StaffSaleOrders() {
                       >
                         Đang giao
                       </button>
-                      <button
-                        onClick={() => handleUpdateStatus(selectedOrder._id, 'Completed')}
-                        disabled={actionLoading}
-                        className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50"
-                      >
-                        Giao hàng thành công
-                      </button>
                     </>
                   )}
                   {selectedOrder.status === 'Shipping' && (
@@ -423,11 +488,20 @@ export default function StaffSaleOrders() {
                   )}
                   {['PendingConfirmation', 'Confirmed'].includes(selectedOrder.status) && (
                     <button
-                      onClick={() => handleUpdateStatus(selectedOrder._id, 'Cancelled')}
+                      onClick={() => setCancelModal({ show: true, orderId: selectedOrder._id, reasonType: 'not_as_expected', reasonText: '' })}
                       disabled={actionLoading}
                       className="rounded-xl bg-rose-50 px-5 py-2.5 text-sm font-semibold text-rose-700 hover:bg-rose-100 disabled:opacity-50"
                     >
                       Hủy đơn
+                    </button>
+                  )}
+                  {selectedOrder.status === 'ReturnRequested' && (
+                    <button
+                      onClick={() => handleUpdateStatus(selectedOrder._id, 'Returned')}
+                      disabled={actionLoading}
+                      className="rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-700 disabled:opacity-50"
+                    >
+                      Xác nhận trả hàng
                     </button>
                   )}
                 </div>

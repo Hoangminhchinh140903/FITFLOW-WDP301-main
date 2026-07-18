@@ -36,10 +36,10 @@ const statusColors = {
   Cancelled: 'bg-red-100 text-red-800'
 }
 
-const getCustomerText = (customer) => {
-  if (!customer) return 'N/A'
-  if (typeof customer === 'string') return customer
-  if (typeof customer === 'object') {
+const getCustomerText = (order) => {
+  if (!order) return 'N/A'
+  const customer = order.customerId
+  if (customer && typeof customer === 'object') {
     const name = customer.name || ''
     const phone = customer.phone || ''
     const email = customer.email || ''
@@ -48,8 +48,19 @@ const getCustomerText = (customer) => {
     if (name) return name
     if (phone) return phone
     if (email) return email
-    if (customer._id) return customer._id
   }
+
+  // Fallback for guest
+  const guest = order.guestContact || {}
+  const guestName = guest.name || ''
+  const guestPhone = guest.phone || ''
+  const guestEmail = guest.email || ''
+  if (guestName && guestPhone) return `${guestName} - ${guestPhone} (Khách lẻ)`
+  if (guestName && guestEmail) return `${guestName} - ${guestEmail} (Khách lẻ)`
+  if (guestName) return `${guestName} (Khách lẻ)`
+
+  if (customer && typeof customer === 'string') return customer
+  if (customer && customer._id) return customer._id
   return 'N/A'
 }
 
@@ -153,6 +164,7 @@ export default function StaffRentOrders() {
   // Return modal state
   const [showReturnModal, setShowReturnModal] = useState(false)
   const [returnOrderId, setReturnOrderId] = useState(null)
+  const [cancelOrderModal, setCancelOrderModal] = useState({ show: false, orderId: null, reasonType: 'not_as_expected', reasonText: '' })
   const [returnItems, setReturnItems] = useState([])
   const [returnNote, setReturnNote] = useState('')
   const [returnError, setReturnError] = useState('')
@@ -258,14 +270,24 @@ export default function StaffRentOrders() {
     }
   }
 
-  const handleCancelOrder = async (orderId) => {
-    if (!window.confirm('Bạn có chắc muốn hủy đơn này không?')) return
+  const handleCancelOrder = async () => {
+    const finalReason = cancelOrderModal.reasonType === 'other' 
+      ? cancelOrderModal.reasonText 
+      : (cancelOrderModal.reasonType === 'not_as_expected' ? 'Sản phẩm không giống như mong đợi' : 'Sản phẩm bị lỗi')
+
+    if (cancelOrderModal.reasonType === 'other' && !finalReason.trim()) {
+      showError('Vui lòng nhập lý do hủy đơn')
+      return
+    }
     setActionLoading(true)
     try {
-      await cancelRentOrderApi(orderId)
+      await cancelRentOrderApi(cancelOrderModal.orderId, { reason: finalReason })
       showSuccess('Đã hủy đơn!')
       fetchOrders()
-      setSelectedOrder(null)
+      setCancelOrderModal({ show: false, orderId: null, reasonType: 'not_as_expected', reasonText: '' })
+      if (selectedOrder?._id === cancelOrderModal.orderId) {
+        setSelectedOrder((prev) => ({ ...prev, status: 'Cancelled' }))
+      }
     } catch (err) {
       showError(err.response?.data?.message || 'Có lỗi xảy ra khi hủy đơn')
     } finally {
@@ -872,12 +894,12 @@ export default function StaffRentOrders() {
                       Xem chi tiết
                     </button>
                   </div>
-                  <p className="mt-3 text-base font-semibold text-slate-950">{getCustomerText(selectedOrder.customerId)}</p>
+                  <p className="mt-3 text-base font-semibold text-slate-950">{getCustomerText(selectedOrder)}</p>
                 </div>
 
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Ngày thuê</p>
-                  <p className="mt-3 text-base font-semibold text-slate-950">
+                  <p className="mt-1 text-base font-semibold text-slate-950">
                     {formatDate(selectedOrder.rentStartDate)} - {formatDate(selectedOrder.rentEndDate)}
                   </p>
                 </div>
@@ -1158,7 +1180,7 @@ export default function StaffRentOrders() {
                         {actionLoading ? 'Đang xử lý...' : 'Thanh toán bằng QR'}
                       </button>
                       <button
-                        onClick={() => handleCancelOrder(selectedOrder._id)}
+                        onClick={() => setCancelOrderModal({ show: true, orderId: selectedOrder._id, reasonType: 'not_as_expected', reasonText: '' })}
                         disabled={actionLoading}
                         className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 disabled:bg-gray-400"
                       >
@@ -1652,6 +1674,78 @@ export default function StaffRentOrders() {
                     Đang xử lý...
                   </span>
                 ) : 'Xác nhận bàn giao'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {cancelOrderModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-900">Hủy đơn thuê</h3>
+            <p className="mt-2 mb-4 text-sm text-slate-500">Vui lòng chọn lý do bạn muốn hủy đơn thuê này.</p>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3">
+                <input 
+                  type="radio" 
+                  name="reasonType" 
+                  value="not_as_expected"
+                  checked={cancelOrderModal.reasonType === 'not_as_expected'}
+                  onChange={() => setCancelOrderModal({ ...cancelOrderModal, reasonType: 'not_as_expected' })}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                />
+                <span className="text-sm text-slate-700">Sản phẩm không giống như mong đợi</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input 
+                  type="radio" 
+                  name="reasonType" 
+                  value="defective"
+                  checked={cancelOrderModal.reasonType === 'defective'}
+                  onChange={() => setCancelOrderModal({ ...cancelOrderModal, reasonType: 'defective' })}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                />
+                <span className="text-sm text-slate-700">Sản phẩm bị lỗi</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input 
+                  type="radio" 
+                  name="reasonType" 
+                  value="other"
+                  checked={cancelOrderModal.reasonType === 'other'}
+                  onChange={() => setCancelOrderModal({ ...cancelOrderModal, reasonType: 'other' })}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                />
+                <span className="text-sm text-slate-700">Khác</span>
+              </label>
+              
+              {cancelOrderModal.reasonType === 'other' && (
+                <textarea
+                  className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  rows="3"
+                  placeholder="Nhập lý do chi tiết..."
+                  value={cancelOrderModal.reasonText}
+                  onChange={(e) => setCancelOrderModal({ ...cancelOrderModal, reasonText: e.target.value })}
+                ></textarea>
+              )}
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setCancelOrderModal({ show: false, orderId: null, reasonType: 'not_as_expected', reasonText: '' })}
+                className="flex-1 rounded-xl bg-slate-100 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+                disabled={actionLoading}
+              >
+                Đóng
+              </button>
+              <button
+                type="button"
+                onClick={handleCancelOrder}
+                className="flex-1 rounded-xl bg-red-600 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+                disabled={actionLoading}
+              >
+                {actionLoading ? 'Đang xử lý...' : 'Xác nhận hủy'}
               </button>
             </div>
           </div>

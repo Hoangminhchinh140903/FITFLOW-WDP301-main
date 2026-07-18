@@ -380,9 +380,153 @@ const sendRentOrderConfirmationEmail = async (order = {}) => {
   return true;
 };
 
+const buildRentOrderCancelEmail = (order = {}, reason = '') => {
+  const orderCode = normalizeText(order.orderCode) || `RO-${String(order._id || '').slice(-6).toUpperCase()}`;
+  const customer = order.customer || {};
+  const orderUrl = normalizeText(order.orderUrl) || frontendUrl;
+  const cancelReason = escapeHtml(reason || order.cancelReason || 'Không có lý do được cung cấp.');
+
+  const html = `
+    <div style="margin:0;padding:24px;background:#f8fafc;">
+      <div style="max-width:680px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:24px;box-shadow:0 12px 40px rgba(15,23,42,0.08);overflow:hidden;">
+        <div style="padding:28px 28px 20px;background:linear-gradient(135deg,#fdf2f8,#ffffff);border-bottom:1px solid #e5e7eb;">
+          <div style="font-family:Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#db2777;">FITFLOW - THÔNG BÁO HỦY ĐƠN</div>
+          <h1 style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:28px;line-height:1.2;color:#0f172a;">Đơn thuê đã bị hủy</h1>
+          <p style="margin:10px 0 0;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#475569;">
+            Xin chào ${escapeHtml(customer.name || '')}, đơn thuê <strong>${escapeHtml(orderCode)}</strong> của bạn đã bị hủy.
+          </p>
+        </div>
+
+        <div style="padding:24px 28px 28px;">
+          <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:18px;padding:18px 20px;">
+             <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#9f1239;">
+               <strong>Lý do hủy đơn:</strong><br/>
+               ${cancelReason}
+             </p>
+          </div>
+
+          <div style="margin-top:24px;text-align:center;">
+            <a href="${escapeHtml(orderUrl)}" style="display:inline-block;padding:14px 28px;border-radius:999px;background:#db2777;color:#ffffff;font-family:Arial,sans-serif;font-size:14px;font-weight:700;text-decoration:none;">
+              Xem chi tiết đơn thuê
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const text = [
+    'Don thue cua ban da bi huy',
+    `Ma don thue: ${orderCode}`,
+    `Khach hang: ${customer.name || ''}`,
+    `Ly do: ${cancelReason}`,
+    '',
+    `Xem don thue: ${orderUrl}`,
+  ].join('\n');
+
+  return {
+    subject: `Thông báo hủy đơn thuê - ${orderCode}`,
+    html,
+    text,
+  };
+};
+
+const sendRentOrderCancelEmail = async (order = {}, reason = '') => {
+  if (!hasSmtpConfig()) return false;
+  if (!normalizeText(order?.customer?.email)) return false;
+
+  const transporter = nodemailer.createTransport(getSmtpConfig());
+  const from = process.env.SMTP_FROM || `FITFLOW <${process.env.SMTP_USER}>`;
+  const { subject, html, text } = buildRentOrderCancelEmail(order, reason);
+
+  await transporter.sendMail({
+    from,
+    to: order.customer.email,
+    subject,
+    html,
+    text,
+  });
+
+  return true;
+};
+
+const buildSaleOrderCancelEmail = (order = {}, reason = '') => {
+  const orderCode = getOrderCode(order);
+  const customer = order.customer || {};
+  const orderUrl = normalizeText(order.orderUrl) || frontendUrl;
+  const cancelReason = escapeHtml(reason || order.cancelReason || 'Không có lý do được cung cấp.');
+
+  const html = `
+    <div style="margin:0;padding:24px;background:#f8fafc;">
+      <div style="max-width:680px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:24px;box-shadow:0 12px 40px rgba(15,23,42,0.08);overflow:hidden;">
+        <div style="padding:28px 28px 20px;background:linear-gradient(135deg,#fdf2f8,#ffffff);border-bottom:1px solid #e5e7eb;">
+          <div style="font-family:Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#db2777;">FITFLOW - THÔNG BÁO HỦY ĐƠN</div>
+          <h1 style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:28px;line-height:1.2;color:#0f172a;">Đơn mua đã bị hủy</h1>
+          <p style="margin:10px 0 0;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#475569;">
+            Xin chào ${escapeHtml(customer.name || '')}, đơn mua <strong>${escapeHtml(orderCode)}</strong> của bạn đã bị hủy.
+          </p>
+        </div>
+
+        <div style="padding:24px 28px 28px;">
+          <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:18px;padding:18px 20px;">
+             <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#9f1239;">
+               <strong>Lý do hủy đơn:</strong><br/>
+               ${cancelReason}
+             </p>
+          </div>
+
+          <div style="margin-top:24px;text-align:center;">
+            <a href="${escapeHtml(orderUrl)}" style="display:inline-block;padding:14px 28px;border-radius:999px;background:#db2777;color:#ffffff;font-family:Arial,sans-serif;font-size:14px;font-weight:700;text-decoration:none;">
+              Xem chi tiết đơn mua
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const text = [
+    'Don mua cua ban da bi huy',
+    `Ma don mua: ${orderCode}`,
+    `Khach hang: ${customer.name || ''}`,
+    `Ly do: ${cancelReason}`,
+    '',
+    `Xem don mua: ${orderUrl}`,
+  ].join('\n');
+
+  return {
+    subject: `Thông báo hủy đơn mua - ${orderCode}`,
+    html,
+    text,
+  };
+};
+
+const sendSaleOrderCancelEmail = async (order = {}, reason = '') => {
+  if (!hasSmtpConfig()) return false;
+  if (!normalizeText(order?.customer?.email)) return false;
+
+  const transporter = nodemailer.createTransport(getSmtpConfig());
+  const from = process.env.SMTP_FROM || `FITFLOW <${process.env.SMTP_USER}>`;
+  const { subject, html, text } = buildSaleOrderCancelEmail(order, reason);
+
+  await transporter.sendMail({
+    from,
+    to: order.customer.email,
+    subject,
+    html,
+    text,
+  });
+
+  return true;
+};
+
 module.exports = {
   buildOrderConfirmationEmail,
   sendOrderConfirmationEmail,
   buildRentOrderConfirmationEmail,
   sendRentOrderConfirmationEmail,
+  buildRentOrderCancelEmail,
+  sendRentOrderCancelEmail,
+  buildSaleOrderCancelEmail,
+  sendSaleOrderCancelEmail,
 };

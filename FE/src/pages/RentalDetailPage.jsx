@@ -61,6 +61,7 @@ export default function RentalDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
+  const [cancelModal, setCancelModal] = useState({ show: false, reasonType: 'not_as_expected', reasonText: '' })
 
   // Pickup form
   const [pickupCollateralType, setPickupCollateralType] = useState('CCCD')
@@ -169,8 +170,19 @@ export default function RentalDetailPage() {
     }
   }
 
-  const handleCancelOrder = async () => {
-    if (!confirm('Bạn có chắc chắn muốn hủy đơn thuê này?')) return
+  const handleCancelOrder = () => {
+    setCancelModal({ show: true, reasonType: 'not_as_expected', reasonText: '' })
+  }
+
+  const confirmCancelOrder = async () => {
+    const finalReason = cancelModal.reasonType === 'other' 
+      ? cancelModal.reasonText 
+      : (cancelModal.reasonType === 'not_as_expected' ? 'Sản phẩm không giống như mong đợi' : 'Sản phẩm bị lỗi')
+      
+    if (cancelModal.reasonType === 'other' && !finalReason.trim()) {
+      alert('Vui lòng nhập lý do hủy đơn')
+      return
+    }
 
     setActionLoading(true)
     try {
@@ -178,11 +190,13 @@ export default function RentalDetailPage() {
         ? await cancelGuestRentOrderApi(id, {
             token: guestToken,
             email: order?.guestContact?.email || '',
+            reason: finalReason
           })
-        : await cancelRentOrderApi(id)
+        : await cancelRentOrderApi(id, { reason: finalReason })
       if (response.success) {
         alert('Hủy đơn thành công!')
         fetchOrderDetail()
+        setCancelModal({ show: false, reasonType: 'not_as_expected', reasonText: '' })
       }
     } catch (err) {
       alert(err.response?.data?.message || 'Có lỗi xảy ra')
@@ -749,6 +763,78 @@ export default function RentalDetailPage() {
           </div>
         </div>
       </div>
+      {/* Cancel Order Modal */}
+      {cancelModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-900">Hủy đơn thuê</h3>
+            <p className="mt-2 mb-4 text-sm text-slate-500">Vui lòng chọn lý do bạn muốn hủy đơn thuê này.</p>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3">
+                <input 
+                  type="radio" 
+                  name="reasonType" 
+                  value="not_as_expected"
+                  checked={cancelModal.reasonType === 'not_as_expected'}
+                  onChange={() => setCancelModal({ ...cancelModal, reasonType: 'not_as_expected' })}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                />
+                <span className="text-sm text-slate-700">Sản phẩm không giống như mong đợi</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input 
+                  type="radio" 
+                  name="reasonType" 
+                  value="defective"
+                  checked={cancelModal.reasonType === 'defective'}
+                  onChange={() => setCancelModal({ ...cancelModal, reasonType: 'defective' })}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                />
+                <span className="text-sm text-slate-700">Sản phẩm bị lỗi</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input 
+                  type="radio" 
+                  name="reasonType" 
+                  value="other"
+                  checked={cancelModal.reasonType === 'other'}
+                  onChange={() => setCancelModal({ ...cancelModal, reasonType: 'other' })}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                />
+                <span className="text-sm text-slate-700">Khác</span>
+              </label>
+              
+              {cancelModal.reasonType === 'other' && (
+                <textarea
+                  className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  rows="3"
+                  placeholder="Nhập lý do chi tiết..."
+                  value={cancelModal.reasonText}
+                  onChange={(e) => setCancelModal({ ...cancelModal, reasonText: e.target.value })}
+                ></textarea>
+              )}
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setCancelModal({ show: false, reasonType: 'not_as_expected', reasonText: '' })}
+                className="flex-1 rounded-xl bg-slate-100 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+                disabled={actionLoading}
+              >
+                Đóng
+              </button>
+              <button
+                type="button"
+                onClick={confirmCancelOrder}
+                className="flex-1 rounded-xl bg-red-600 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+                disabled={actionLoading}
+              >
+                {actionLoading ? 'Đang xử lý...' : 'Xác nhận hủy'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

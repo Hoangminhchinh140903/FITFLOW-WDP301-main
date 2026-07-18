@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import BasicInfoSection from './BasicInfoSection'
+import ImageSection from './ImageSection'
 import SizeSection from './SizeSection'
 import SizeGuideSection from './SizeGuideSection'
-import ImageSection from './ImageSection'
 import InventorySummary from './InventorySummary'
 import {
     addSizeGuideRow,

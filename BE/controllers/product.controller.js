@@ -1393,20 +1393,35 @@ const updateOwnerProduct = async (req, res) => {
     }
 
     try {
-      if (!nextPayload.isDraft && payload.hasSizes && Array.isArray(payload.sizes) && payload.sizes.length > 0) {
-        // Use actual inventory as baseline to avoid drift between Product.sizes and ProductInstance.
-        const currentSizeStockMap = await getOwnerSizeStockMap([updated._id]);
-        const currentSizeRows = currentSizeStockMap.get(String(updated._id)) || [];
+      if (!nextPayload.isDraft) {
+        if (payload.hasSizes && Array.isArray(payload.sizes) && payload.sizes.length > 0) {
+          // Use actual inventory as baseline to avoid drift between Product.sizes and ProductInstance.
+          const currentSizeStockMap = await getOwnerSizeStockMap([updated._id]);
+          const currentSizeRows = currentSizeStockMap.get(String(updated._id)) || [];
 
-        await reconcileInstancesToSizeRows(
-          updated._id,
-          currentSizeRows,
-          nextPayload.sizes,
-          {
-            baseRentPrice: updated.baseRentPrice,
-            baseSalePrice: updated.baseSalePrice,
-          }
-        );
+          await reconcileInstancesToSizeRows(
+            updated._id,
+            currentSizeRows,
+            nextPayload.sizes,
+            {
+              baseRentPrice: updated.baseRentPrice,
+              baseSalePrice: updated.baseSalePrice,
+            }
+          );
+        } else if (!payload.hasSizes && payload.quantity >= 0) {
+          const currentSizeStockMap = await getOwnerSizeStockMap([updated._id]);
+          const currentSizeRows = currentSizeStockMap.get(String(updated._id)) || [];
+          
+          await reconcileInstancesToSizeRows(
+            updated._id,
+            currentSizeRows,
+            [{ size: 'ONE', quantity: payload.quantity }],
+            {
+              baseRentPrice: updated.baseRentPrice,
+              baseSalePrice: updated.baseSalePrice,
+            }
+          );
+        }
       }
     } catch (syncErr) {
       const syncError = syncErr?.message || String(syncErr);

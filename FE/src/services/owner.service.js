@@ -307,8 +307,8 @@ export const getOwnerOrdersApi = async (params = {}) => {
     return response.data
 }
 
-export const updateOwnerOrderStatusApi = async (orderId, status) => {
-    const response = await axiosClient.patch(`/owner/orders/${orderId}/status`, { status })
+export const updateOwnerOrderStatusApi = async (orderId, status, payload = {}) => {
+    const response = await axiosClient.patch(`/owner/orders/${orderId}/status`, { status, ...payload })
     return response.data
 }
 

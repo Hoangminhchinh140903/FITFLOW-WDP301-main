@@ -13,7 +13,7 @@ export const getRentOrderByIdRequest = (id) => axiosClient.get(`/rent-orders/${i
 export const payDepositRequest = (id, payload) => axiosClient.post(`/rent-orders/${id}/deposit`, payload)
 
 // Hủy đơn thuê
-export const cancelRentOrderRequest = (id) => axiosClient.put(`/rent-orders/${id}/cancel`)
+export const cancelRentOrderRequest = (id, payload) => axiosClient.put(`/rent-orders/${id}/cancel`, payload)
 
 // Lấy tất cả đơn thuê (Staff/Owner)
 export const getAllRentOrdersRequest = (params) => axiosClient.get('/rent-orders/all', { params })
@@ -72,8 +72,8 @@ export const getGuestRentOrderByIdRequest = (id, token) =>
   })
 
 // Guest tự hủy đơn (xác thực bằng token magic-link hoặc email)
-export const cancelGuestRentOrderRequest = (id, { token, email } = {}) =>
-  axiosClient.put(`/rent-orders/guest/${id}/cancel`, { email }, {
+export const cancelGuestRentOrderRequest = (id, { token, email, reason } = {}) =>
+  axiosClient.put(`/rent-orders/guest/${id}/cancel`, { email, reason }, {
     params: token ? { token } : undefined,
     skipAuthRedirect: true,
   })

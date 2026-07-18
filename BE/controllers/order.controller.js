@@ -856,6 +856,9 @@ const buildOrderEmailPayload = ({ saleOrder, items, customer }) => {
 };
 
 const getGuestOrderViewTokenFromRequest = (req) => {
+  const headerToken = String(req?.headers?.['x-guest-token'] || '').trim();
+  if (headerToken) return headerToken;
+
   const queryToken = String(req?.query?.token || '').trim();
   if (queryToken) return queryToken;
   return extractBearerToken(req?.headers?.authorization);
@@ -1681,9 +1684,7 @@ exports.updateOwnerSaleOrderStatus = async (req, res) => {
       });
     }
     await order.save();
-    if (normalizedStatus === 'Cancelled') {
-      await notifySaleOrderCancelled(order, 'owner_or_staff_cancel');
-    }
+    
     const [populated] = await attachSaleOrderItems([
       await SaleOrder.findById(id)
         .populate('customerId', 'name phone email')
@@ -1691,6 +1692,33 @@ exports.updateOwnerSaleOrderStatus = async (req, res) => {
         .populate('history.updatedBy', 'name email'),
     ]);
     const [populatedWithInvoice] = await attachSaleInvoiceCompat([populated]);
+
+    if (normalizedStatus === 'Cancelled') {
+      await notifySaleOrderCancelled(order, 'owner_or_staff_cancel');
+      
+      const { sendSaleOrderCancelEmail } = require('../services/mailService');
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      
+      let finalOrderUrl = '';
+      if (populatedWithInvoice.customerId) {
+        finalOrderUrl = `${frontendUrl}/orders/my-orders/${populatedWithInvoice._id}`;
+      } else {
+        const { signGuestOrderViewToken } = require('../utils/jwt');
+        const token = signGuestOrderViewToken({ 
+          orderId: populatedWithInvoice._id, 
+          email: populatedWithInvoice.guestEmail 
+        });
+        finalOrderUrl = `${frontendUrl}/orders/guest/${populatedWithInvoice._id}?token=${token}`;
+      }
+
+      const emailOrder = {
+        ...populatedWithInvoice,
+        customer: populatedWithInvoice.customerId || { name: populatedWithInvoice.guestName, email: populatedWithInvoice.guestEmail },
+        orderUrl: finalOrderUrl
+      };
+      
+      sendSaleOrderCancelEmail(emailOrder, req.body.reason || 'Nhân viên hủy đơn').catch(err => console.error('Failed to send cancel sale order email:', err));
+    }
 
     return res.json({
       success: true,
@@ -1807,5 +1835,213 @@ exports.createWalkInOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Sản phẩm đã hết hàng hoặc không đủ số lượng.' });
     }
     return res.status(500).json({ success: false, message: 'Không thể tạo đơn mua lúc này.' });
+  }
+};
+
+exports.cancelGuestSaleOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason, email, token: bodyToken } = req.body || {};
+
+    const guestOrderViewToken = getGuestOrderViewTokenFromRequest(req) || bodyToken;
+    let tokenEmail = '';
+    let tokenOrderId = '';
+
+    console.log('[DEBUG] cancelGuestSaleOrder - id:', id);
+    console.log('[DEBUG] cancelGuestSaleOrder - guestOrderViewToken:', guestOrderViewToken);
+    console.log('[DEBUG] cancelGuestSaleOrder - email:', email);
+
+    if (guestOrderViewToken) {
+      try {
+        const payload = verifyGuestOrderViewToken(guestOrderViewToken);
+        tokenOrderId = String(payload?.orderId || '');
+        tokenEmail = normalizeEmail(payload?.guestEmail || '');
+        console.log('[DEBUG] cancelGuestSaleOrder - tokenOrderId:', tokenOrderId, 'tokenEmail:', tokenEmail);
+      } catch (err) {
+        console.log('[DEBUG] cancelGuestSaleOrder - verifyGuestOrderViewToken error:', err.message);
+      }
+    }
+
+    const order = await SaleOrder.findById(id);
+    if (!order) return res.status(404).json({ success: false, message: 'Không tìm thấy đơn mua.' });
+
+    const contactEmail = normalizeEmail(order.guestEmail || '');
+    console.log('[DEBUG] cancelGuestSaleOrder - contactEmail:', contactEmail);
+
+    if (!contactEmail) return res.status(403).json({ success: false, message: 'Đơn này không phải đơn mua guest.' });
+
+    const authedByToken = guestOrderViewToken && tokenOrderId === String(id) && tokenEmail && tokenEmail === contactEmail;
+    const authedByEmail = email && normalizeEmail(email) === contactEmail;
+
+    console.log('[DEBUG] cancelGuestSaleOrder - authedByToken:', authedByToken, 'authedByEmail:', authedByEmail);
+
+    if (!authedByToken && !authedByEmail) {
+      const debugInfo = `Không có quyền hủy đơn. tokenOrderId=${tokenOrderId} tokenEmail=${tokenEmail} contactEmail=${contactEmail} hasToken=${!!guestOrderViewToken}`;
+      return res.status(403).json({ success: false, message: debugInfo });
+    }
+
+    if (order.status === 'Cancelled') {
+      return res.status(400).json({ success: false, message: 'Đơn hàng đã ở trạng thái này.' });
+    }
+
+    if (!['PendingPayment', 'PendingConfirmation', 'Confirmed', 'Shipping'].includes(String(order.status || ''))) {
+      return res.status(400).json({ success: false, message: `Không thể hủy đơn ở trạng thái "${order.status}".` });
+    }
+
+    await releaseSaleOrderInstances(order._id);
+    order.status = 'Cancelled';
+    order.userStatus = resolveSaleOrderUserStatus('Cancelled', order.userStatus);
+    if (reason) order.cancelReason = reason;
+
+    order.history = Array.isArray(order.history) ? order.history : [];
+    order.history.push({
+      status: 'Cancelled',
+      action: 'guest_cancel',
+      description: 'Khách hàng (Guest) đã hủy đơn',
+      updatedBy: null,
+      updatedAt: new Date(),
+    });
+    
+    await order.save();
+    await notifySaleOrderCancelled(order, 'customer_cancel');
+    
+    const emailOrder = {
+      ...order.toObject(),
+      customer: { name: order.guestName, email: order.guestEmail },
+      orderUrl: `${frontendUrl}/orders/guest/${order._id}?token=${guestOrderViewToken}`
+    };
+    sendSaleOrderCancelEmail(emailOrder, reason).catch(err => console.error('Failed to send cancel sale order email:', err));
+
+    return res.json({ success: true, message: 'Hủy đơn thành công.' });
+  } catch (error) {
+    console.error('Cancel guest sale order error:', error);
+    return res.status(500).json({ success: false, message: 'Không thể hủy đơn lúc này.' });
+  }
+};
+
+exports.returnGuestSaleOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason, email, token: bodyToken } = req.body || {};
+
+    const guestOrderViewToken = getGuestOrderViewTokenFromRequest(req) || bodyToken;
+    let tokenEmail = '';
+    let tokenOrderId = '';
+
+    console.log('[DEBUG] returnGuestSaleOrder - id:', id);
+    console.log('[DEBUG] returnGuestSaleOrder - guestOrderViewToken:', guestOrderViewToken);
+
+    if (guestOrderViewToken) {
+      try {
+        const payload = verifyGuestOrderViewToken(guestOrderViewToken);
+        tokenOrderId = String(payload?.orderId || '');
+        tokenEmail = normalizeEmail(payload?.guestEmail || '');
+      } catch (err) {
+        console.log('[DEBUG] returnGuestSaleOrder - verifyGuestOrderViewToken error:', err.message);
+      }
+    }
+
+    const order = await SaleOrder.findById(id);
+    if (!order) return res.status(404).json({ success: false, message: 'Không tìm thấy đơn mua.' });
+
+    const contactEmail = normalizeEmail(order.guestEmail || '');
+    if (!contactEmail) return res.status(403).json({ success: false, message: 'Đơn này không phải đơn mua guest.' });
+
+    const authedByToken = guestOrderViewToken && tokenOrderId === String(id) && tokenEmail && tokenEmail === contactEmail;
+    const authedByEmail = email && normalizeEmail(email) === contactEmail;
+
+    if (!authedByToken && !authedByEmail) {
+      return res.status(403).json({ success: false, message: 'Không có quyền hoàn trả đơn này.' });
+    }
+
+    if (order.status !== 'Completed') {
+      return res.status(400).json({ success: false, message: 'Chỉ có thể hoàn trả cho đơn hàng đã hoàn tất.' });
+    }
+
+    order.status = 'ReturnRequested';
+    if (reason) order.cancelReason = reason;
+
+    order.history = Array.isArray(order.history) ? order.history : [];
+    order.history.push({
+      status: 'ReturnRequested',
+      action: 'guest_return_request',
+      description: 'Khách hàng (Guest) yêu cầu hoàn trả hàng',
+      updatedBy: null,
+      updatedAt: new Date(),
+    });
+    
+    await order.save();
+    return res.json({ success: true, message: 'Yêu cầu hoàn trả hàng thành công.' });
+  } catch (error) {
+    console.error('Return guest sale order error:', error);
+    return res.status(500).json({ success: false, message: 'Không thể hoàn trả đơn lúc này.' });
+  }
+};
+
+exports.cancelMySaleOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    const userId = req.user._id;
+
+    const order = await SaleOrder.findOne({ _id: id, customerId: userId });
+    if (!order) return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+
+    if (!['PendingPayment', 'PendingConfirmation', 'Confirmed', 'Shipping'].includes(order.status)) {
+      return res.status(400).json({ success: false, message: `Không thể hủy đơn hàng ở trạng thái ${order.status}` });
+    }
+
+    await releaseSaleOrderInstances(order._id);
+    order.status = 'Cancelled';
+    order.userStatus = resolveSaleOrderUserStatus('Cancelled', order.userStatus);
+    if (reason) order.cancelReason = reason;
+
+    order.history.push({
+      status: 'Cancelled',
+      action: 'customer_cancel',
+      description: 'Khách hàng (Thành viên) đã hủy đơn',
+      updatedBy: userId,
+      updatedAt: new Date(),
+    });
+    
+    await order.save();
+    await notifySaleOrderCancelled(order, 'customer_cancel');
+    
+    return res.json({ success: true, message: 'Hủy đơn thành công.' });
+  } catch (error) {
+    console.error('Cancel my sale order error:', error);
+    return res.status(500).json({ success: false, message: 'Không thể hủy đơn lúc này.' });
+  }
+};
+
+exports.returnMySaleOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    const userId = req.user._id;
+
+    const order = await SaleOrder.findOne({ _id: id, customerId: userId });
+    if (!order) return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+
+    if (order.status !== 'Completed') {
+      return res.status(400).json({ success: false, message: 'Chỉ có thể hoàn trả cho đơn hàng đã hoàn tất.' });
+    }
+
+    order.status = 'ReturnRequested';
+    if (reason) order.cancelReason = reason;
+
+    order.history.push({
+      status: 'ReturnRequested',
+      action: 'customer_return_request',
+      description: 'Khách hàng yêu cầu hoàn trả hàng',
+      updatedBy: userId,
+      updatedAt: new Date(),
+    });
+    
+    await order.save();
+    return res.json({ success: true, message: 'Yêu cầu hoàn trả hàng thành công.' });
+  } catch (error) {
+    console.error('Return my sale order error:', error);
+    return res.status(500).json({ success: false, message: 'Không thể hoàn trả đơn lúc này.' });
   }
 };

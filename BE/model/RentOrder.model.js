@@ -34,6 +34,10 @@ const rentOrderSchema = new mongoose.Schema({
     ],
     default: 'PendingDeposit'
   },
+  cancelReason: {
+    type: String,
+    default: ''
+  },
   rentStartDate: {
     type: Date,
     required: true

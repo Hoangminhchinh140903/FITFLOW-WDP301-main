@@ -4,7 +4,14 @@ import { CreditCard, MapPin, Package, ReceiptText, UserRound } from 'lucide-reac
 import Header from '../components/common/Header'
 import ReviewForm from '../components/review/ReviewForm'
 import { useAuth } from '../contexts/AuthContext'
-import { getGuestSaleOrderByIdApi, getMySaleOrderByIdApi } from '../services/order.service'
+import {
+  getGuestSaleOrderByIdApi,
+  getMySaleOrderByIdApi,
+  cancelMySaleOrderApi,
+  returnMySaleOrderApi,
+  cancelGuestSaleOrderApi,
+  returnGuestSaleOrderApi,
+} from '../services/order.service'
 import { createReviewApi, updateReviewApi } from '../services/review.service'
 import { UI_IMAGE_FALLBACKS } from '../constants/ui'
 
@@ -71,6 +78,9 @@ export default function OrderDetailPage() {
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [reviewSubmitting, setReviewSubmitting] = useState(false)
   const [activeReviewItem, setActiveReviewItem] = useState(null)
+
+  const [cancelModal, setCancelModal] = useState({ show: false, isReturn: false, reasonType: 'not_as_expected', reasonText: '' })
+  const [actionLoading, setActionLoading] = useState(false)
 
   const fetchOrderDetail = useCallback(async () => {
     try {
@@ -139,9 +149,52 @@ export default function OrderDetailPage() {
     setReviewModalOpen(true)
   }
 
+  const canCancel = ['PendingPayment', 'PendingConfirmation', 'Confirmed', 'Shipping'].includes(String(order?.status || ''))
+  const canReturn = ['Completed'].includes(String(order?.status || ''))
+
   const closeReviewModal = () => {
     setReviewModalOpen(false)
     setActiveReviewItem(null)
+  }
+
+  const handleConfirmCancelReturn = async () => {
+    if (cancelModal.reasonType === 'other' && !cancelModal.reasonText.trim()) {
+      showToast('Vui lòng nhập lý do cụ thể')
+      return
+    }
+
+    const reasonMap = {
+      not_as_expected: 'Sản phẩm không giống mong đợi',
+      defective: 'Sản phẩm bị lỗi',
+      other: cancelModal.reasonText.trim(),
+    }
+    const finalReason = reasonMap[cancelModal.reasonType] || reasonMap.other
+
+    try {
+      setActionLoading(true)
+      if (cancelModal.isReturn) {
+        if (isGuestView) {
+          await returnGuestSaleOrderApi(order._id, { token: guestToken, reason: finalReason })
+        } else {
+          await returnMySaleOrderApi(order._id, { reason: finalReason })
+        }
+        showToast('Đã gửi yêu cầu trả hàng')
+      } else {
+        if (isGuestView) {
+          await cancelGuestSaleOrderApi(order._id, { token: guestToken, reason: finalReason })
+        } else {
+          await cancelMySaleOrderApi(order._id, { reason: finalReason })
+        }
+        showToast('Đã hủy đơn hàng thành công')
+      }
+      setCancelModal({ show: false, isReturn: false, reasonType: 'not_as_expected', reasonText: '' })
+      await fetchOrderDetail()
+    } catch (err) {
+      console.error('Cancel/Return error:', err)
+      showToast(err?.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại sau.')
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   const handleSubmitReview = async (payload) => {
@@ -398,6 +451,37 @@ export default function OrderDetailPage() {
                 </div>
               </div>
             </div>
+
+            {order.cancelReason && (
+              <div className="rounded-[28px] border border-red-200 bg-red-50/80 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+                <h2 className="mb-2 text-sm uppercase tracking-[0.16em] text-red-500 font-bold">Lý do hủy / trả hàng</h2>
+                <p className="text-sm text-red-700">{order.cancelReason}</p>
+              </div>
+            )}
+
+            {(canCancel || canReturn) && (
+              <div className="rounded-[28px] border border-white/70 bg-white/95 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+                <h2 className="mb-4 text-lg font-semibold text-slate-900">Thao tác nhanh</h2>
+                <div className="flex flex-col gap-3">
+                  {canCancel && (
+                    <button
+                      onClick={() => setCancelModal({ show: true, isReturn: false, reasonType: 'not_as_expected', reasonText: '' })}
+                      className="w-full rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
+                    >
+                      Hủy đơn hàng
+                    </button>
+                  )}
+                  {canReturn && (
+                    <button
+                      onClick={() => setCancelModal({ show: true, isReturn: true, reasonType: 'not_as_expected', reasonText: '' })}
+                      className="w-full rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-700 transition hover:bg-orange-100"
+                    >
+                      Yêu cầu trả hàng
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </aside>
         </div>
       </main>
@@ -424,6 +508,90 @@ export default function OrderDetailPage() {
           onSubmit={handleSubmitReview}
         />
       ) : null}
+
+      {cancelModal.show && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl">
+            <div className="border-b border-slate-100 p-6 text-center">
+              <h3 className="text-xl font-bold text-slate-900">
+                {cancelModal.isReturn ? 'Hoàn trả hàng' : 'Hủy đơn hàng'}
+              </h3>
+              <p className="mt-2 text-sm text-slate-500">
+                {cancelModal.isReturn
+                  ? 'Vui lòng chọn lý do hoàn trả hàng bên dưới.'
+                  : 'Vui lòng chọn lý do hủy đơn hàng bên dưới.'}
+              </p>
+            </div>
+            <div className="p-6">
+              <div className="space-y-3">
+                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 p-4 transition hover:bg-slate-50 [&:has(:checked)]:border-rose-500 [&:has(:checked)]:bg-rose-50">
+                  <input
+                    type="radio"
+                    name="reasonType"
+                    value="not_as_expected"
+                    checked={cancelModal.reasonType === 'not_as_expected'}
+                    onChange={(e) => setCancelModal({ ...cancelModal, reasonType: e.target.value })}
+                    className="h-4 w-4 text-rose-600 focus:ring-rose-500"
+                  />
+                  <span className="text-sm font-medium text-slate-900">Sản phẩm không giống mong đợi</span>
+                </label>
+                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 p-4 transition hover:bg-slate-50 [&:has(:checked)]:border-rose-500 [&:has(:checked)]:bg-rose-50">
+                  <input
+                    type="radio"
+                    name="reasonType"
+                    value="defective"
+                    checked={cancelModal.reasonType === 'defective'}
+                    onChange={(e) => setCancelModal({ ...cancelModal, reasonType: e.target.value })}
+                    className="h-4 w-4 text-rose-600 focus:ring-rose-500"
+                  />
+                  <span className="text-sm font-medium text-slate-900">Sản phẩm bị lỗi</span>
+                </label>
+                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 p-4 transition hover:bg-slate-50 [&:has(:checked)]:border-rose-500 [&:has(:checked)]:bg-rose-50">
+                  <input
+                    type="radio"
+                    name="reasonType"
+                    value="other"
+                    checked={cancelModal.reasonType === 'other'}
+                    onChange={(e) => setCancelModal({ ...cancelModal, reasonType: e.target.value, reasonText: '' })}
+                    className="h-4 w-4 text-rose-600 focus:ring-rose-500"
+                  />
+                  <span className="text-sm font-medium text-slate-900">Khác</span>
+                </label>
+              </div>
+
+              {cancelModal.reasonType === 'other' && (
+                <div className="mt-4">
+                  <textarea
+                    rows={3}
+                    placeholder="Nhập lý do cụ thể..."
+                    value={cancelModal.reasonText}
+                    onChange={(e) => setCancelModal({ ...cancelModal, reasonText: e.target.value })}
+                    className="w-full rounded-2xl border border-slate-200 p-4 text-sm outline-none transition focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                  ></textarea>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-3 bg-slate-50 p-6">
+              <button
+                type="button"
+                onClick={() => setCancelModal({ show: false, isReturn: false, reasonType: 'not_as_expected', reasonText: '' })}
+                disabled={actionLoading}
+                className="flex-1 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-700 ring-1 ring-inset ring-slate-200 transition hover:bg-slate-50 disabled:opacity-50"
+              >
+                Đóng
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmCancelReturn}
+                disabled={actionLoading}
+                className="flex-1 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 disabled:opacity-50"
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

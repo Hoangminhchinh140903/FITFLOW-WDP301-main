@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import Header from '../components/common/Header'
 import { useAuth } from '../contexts/AuthContext'
-import { cancelMySaleOrderApi, getMySaleOrdersApi } from '../services/order.service'
+import { cancelMySaleOrderApi, returnMySaleOrderApi, getMySaleOrdersApi } from '../services/order.service'
 import { cancelRentOrderApi, getMyRentOrdersApi } from '../services/rent-order.service'
 import { UI_IMAGE_FALLBACKS } from '../constants/ui'
 
@@ -84,6 +84,11 @@ const STATUS_META = {
     label: 'Đã trả hàng',
     badgeClass: 'bg-slate-100 text-slate-700 ring-slate-200',
     dotClass: 'bg-slate-500',
+  },
+  return_requested: {
+    label: 'Yêu cầu trả hàng',
+    badgeClass: 'bg-orange-50 text-orange-700 ring-orange-200',
+    dotClass: 'bg-orange-500',
   },
   cancelled: {
     label: 'Đã hủy',
@@ -156,6 +161,11 @@ function getActionConfig(action, orderType = 'rent') {
       className: 'border-rose-200 text-rose-700 hover:bg-rose-50',
       icon: XCircle,
     },
+    return: {
+      label: 'Hoàn trả hàng',
+      className: 'border-amber-200 text-amber-700 hover:bg-amber-50',
+      icon: Undo2,
+    },
     reorder: {
       label: orderType === 'buy' ? 'Mua lại' : 'Thuê lại',
       className: 'border-slate-200 text-slate-700 hover:bg-slate-50',
@@ -210,6 +220,8 @@ function mapBuyStatus(status) {
     case 'Returned':
     case 'Refunded':
       return 'returned'
+    case 'ReturnRequested':
+      return 'return_requested'
     case 'Cancelled':
     case 'Failed':
       return 'cancelled'
@@ -279,8 +291,12 @@ function mapRentProgress(status) {
 function getBuyActions(order) {
   const actions = ['view']
 
-  if (order.rawStatus === 'PendingConfirmation' || order.rawStatus === 'PendingPayment') {
+  if (['PendingConfirmation', 'PendingPayment', 'Confirmed', 'Shipping'].includes(order.rawStatus)) {
     actions.push('cancel')
+  }
+
+  if (order.rawStatus === 'Completed') {
+    actions.push('return')
   }
 
   if (['Completed', 'Returned', 'Refunded'].includes(order.rawStatus)) {
@@ -692,6 +708,13 @@ function OrderCard({ order, onAction }) {
             </div>
           )}
 
+          {order.cancelReason && (
+            <div className="rounded-2xl border border-red-200 bg-red-50/80 p-5">
+              <p className="text-xs uppercase tracking-[0.16em] text-red-500">Lý do hủy / trả hàng</p>
+              <p className="mt-2 text-sm text-red-700">{order.cancelReason}</p>
+            </div>
+          )}
+
           <div className="rounded-2xl border border-slate-200 bg-white p-5">
             <div className="mb-4 flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-slate-500" />
@@ -759,18 +782,10 @@ export default function OrderHistoryPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actionMessage, setActionMessage] = useState('')
+  const [cancelModal, setCancelModal] = useState({ show: false, order: null, actionType: 'cancel', reasonType: 'not_as_expected', reasonText: '' })
+  const [actionLoading, setActionLoading] = useState(false)
 
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      fetchOrders()
-    }
-
-    if (!authLoading && !isAuthenticated) {
-      setLoading(false)
-    }
-  }, [authLoading, isAuthenticated])
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true)
       setError('')
@@ -792,7 +807,17 @@ export default function OrderHistoryPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      fetchOrders()
+    }
+
+    if (!authLoading && !isAuthenticated) {
+      setLoading(false)
+    }
+  }, [authLoading, isAuthenticated, fetchOrders])
 
   const filteredOrders = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase()
@@ -816,22 +841,8 @@ export default function OrderHistoryPage() {
   }, [activeTab, orders, searchValue, statusFilter])
 
   const handleOrderAction = async (order, actionKey) => {
-    if (actionKey === 'cancel') {
-      const confirmed = window.confirm('Bạn có chắc muốn hủy đơn này không?')
-      if (!confirmed) return
-      try {
-        if (order?.type === 'buy') {
-          await cancelMySaleOrderApi(order.id)
-        } else if (order?.type === 'rent') {
-          await cancelRentOrderApi(order.id)
-        }
-        await fetchOrders()
-        setActionMessage('Đã hủy đơn thành công')
-        setTimeout(() => setActionMessage(''), 1800)
-      } catch (actionError) {
-        const message = actionError?.response?.data?.message || 'Không thể hủy đơn lúc này.'
-        setError(message)
-      }
+    if (actionKey === 'cancel' || actionKey === 'return') {
+      setCancelModal({ show: true, order, actionType: actionKey, reasonType: 'not_as_expected', reasonText: '' })
       return
     }
 
@@ -848,6 +859,42 @@ export default function OrderHistoryPage() {
     }
 
     navigate(`/products/${targetProductId}`)
+  }
+
+  const confirmCancelOrder = async () => {
+    const finalReason = cancelModal.reasonType === 'other' 
+      ? cancelModal.reasonText 
+      : (cancelModal.reasonType === 'not_as_expected' ? 'Sản phẩm không giống như mong đợi' : 'Sản phẩm bị lỗi')
+      
+    if (cancelModal.reasonType === 'other' && !finalReason.trim()) {
+      setError('Vui lòng nhập lý do')
+      return
+    }
+    setActionLoading(true)
+    try {
+      if (cancelModal.actionType === 'return') {
+        if (cancelModal.order?.type === 'buy') {
+          await returnMySaleOrderApi(cancelModal.order.id, { reason: finalReason })
+        }
+        setActionMessage('Đã gửi yêu cầu trả hàng thành công')
+      } else {
+        if (cancelModal.order?.type === 'buy') {
+          await cancelMySaleOrderApi(cancelModal.order.id, { reason: finalReason })
+        } else if (cancelModal.order?.type === 'rent') {
+          await cancelRentOrderApi(cancelModal.order.id, { reason: finalReason })
+        }
+        setActionMessage('Đã hủy đơn thành công')
+      }
+      
+      await fetchOrders()
+      setTimeout(() => setActionMessage(''), 1800)
+      setCancelModal({ show: false, order: null, actionType: 'cancel', reasonType: 'not_as_expected', reasonText: '' })
+    } catch (actionError) {
+      const message = actionError?.response?.data?.message || 'Không thể thực hiện yêu cầu lúc này.'
+      setError(message)
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   if (!authLoading && !isAuthenticated) {
@@ -927,6 +974,82 @@ export default function OrderHistoryPage() {
           {actionMessage}
         </div>
       ) : null}
+
+      {cancelModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-900">
+              {cancelModal.actionType === 'return' ? 'Hoàn trả hàng' : 'Hủy đơn hàng'}
+            </h3>
+            <p className="mt-2 mb-4 text-sm text-slate-500">
+              Vui lòng chọn lý do bạn muốn {cancelModal.actionType === 'return' ? 'hoàn trả' : 'hủy'} đơn hàng này.
+            </p>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3">
+                <input 
+                  type="radio" 
+                  name="reasonType" 
+                  value="not_as_expected"
+                  checked={cancelModal.reasonType === 'not_as_expected'}
+                  onChange={() => setCancelModal({ ...cancelModal, reasonType: 'not_as_expected' })}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                />
+                <span className="text-sm text-slate-700">Sản phẩm không giống như mong đợi</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input 
+                  type="radio" 
+                  name="reasonType" 
+                  value="defective"
+                  checked={cancelModal.reasonType === 'defective'}
+                  onChange={() => setCancelModal({ ...cancelModal, reasonType: 'defective' })}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                />
+                <span className="text-sm text-slate-700">Sản phẩm bị lỗi</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input 
+                  type="radio" 
+                  name="reasonType" 
+                  value="other"
+                  checked={cancelModal.reasonType === 'other'}
+                  onChange={() => setCancelModal({ ...cancelModal, reasonType: 'other' })}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                />
+                <span className="text-sm text-slate-700">Khác</span>
+              </label>
+              
+              {cancelModal.reasonType === 'other' && (
+                <textarea
+                  className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  rows="3"
+                  placeholder="Nhập lý do chi tiết..."
+                  value={cancelModal.reasonText}
+                  onChange={(e) => setCancelModal({ ...cancelModal, reasonText: e.target.value })}
+                ></textarea>
+              )}
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setCancelModal({ show: false, order: null, actionType: 'cancel', reasonType: 'not_as_expected', reasonText: '' })}
+                className="flex-1 rounded-xl bg-slate-100 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+                disabled={actionLoading}
+              >
+                Đóng
+              </button>
+              <button
+                type="button"
+                onClick={confirmCancelOrder}
+                className="flex-1 rounded-xl bg-red-600 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+                disabled={actionLoading}
+              >
+                {actionLoading ? 'Đang xử lý...' : 'Xác nhận'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

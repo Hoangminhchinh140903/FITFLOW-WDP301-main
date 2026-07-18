@@ -46,8 +46,8 @@ export const payDepositApi = async (id, payload = {}) => {
   return response.data
 }
 
-export const cancelRentOrderApi = async (id) => {
-  const response = await cancelRentOrderRequest(id)
+export const cancelRentOrderApi = async (id, payload) => {
+  const response = await cancelRentOrderRequest(id, payload)
   return response.data
 }
 
