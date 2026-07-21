@@ -59,7 +59,7 @@ export default function ProductDescription({
   const tabs = useMemo(() => {
     const list = [
       { key: "description", label: "Mô tả" },
-      { key: "policy", label: "Chính sách thuê" },
+      { key: "policy", label: ['Tennis', 'Badminton', 'Pickleball'].includes(category) ? "Chính sách thuê & Đổi trả" : "Chính sách đổi trả" },
     ];
     if (['Shoes', 'Apparel'].includes(category)) {
       list.push({ key: "size", label: "Bảng size" });
@@ -210,12 +210,36 @@ export default function ProductDescription({
         <div className="mt-6 max-w-2xl space-y-3 text-sm leading-relaxed text-[#596255] font-semibold">
           {['Tennis', 'Badminton', 'Pickleball'].includes(category) ? (
             <>
+              <h4 className="font-bold text-[#10150f] mt-2">A. Chính sách thuê</h4>
               <p>Chính sách thuê là cọc 50% giá trị vợt và khi khách đến lấy vợt phải để lại căn cước công dân để xác minh.</p>
               <p>Sau khi hết thời gian thuê và trả lại vợt, shop sẽ tiến hành kiểm tra xác minh tình trạng vợt. Khách hàng sẽ được hoàn lại tiền cọc trừ đi tiền thuê vợt niêm yết và chi phí khắc phục hỏng hóc của vợt (nếu có).</p>
+              <div className="my-4 border-t border-slate-200"></div>
+              <h4 className="font-bold text-[#10150f]">B. Chính sách đổi trả hàng (đối với sản phẩm mua)</h4>
+              <h4 className="font-bold text-[#10150f] mt-2">1. Thời hạn đổi trả</h4>
+              <p>Hỗ trợ đổi trả trong vòng 7 ngày kể từ ngày nhận hàng đối với sản phẩm mua.</p>
+              <h4 className="font-bold text-[#10150f] mt-2">2. Điều kiện đổi trả</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Sản phẩm còn nguyên tem mác, chưa qua sử dụng.</li>
+                <li>Không bị dơ bẩn, trầy xước, hoặc hư hỏng do tác nhân bên ngoài.</li>
+              </ul>
+              <h4 className="font-bold text-[#10150f] mt-2">3. Hình thức hỗ trợ</h4>
+              <p>Hoàn tiền 100% qua phương thức thanh toán ban đầu nếu sản phẩm có lỗi từ nhà sản xuất hoặc đổi sang sản phẩm tương đương nếu shop còn sẵn hàng.</p>
+              <h4 className="font-bold text-[#10150f] mt-2">4. Quy trình xử lý</h4>
+              <p>Khách hàng đóng gói sản phẩm cẩn thận, liên hệ với bộ phận CSKH để xác nhận tình trạng. Phí vận chuyển trả hàng sẽ được hỗ trợ 1 chiều đối với các trường hợp đổi hàng hoặc lỗi sản xuất.</p>
             </>
           ) : (
             <>
-              <p>Không cần bảo dưỡng, dịch vụ bảo dưỡng chuyên nghiệp đã bao gồm trong giá thuê.</p>
+              <h4 className="font-bold text-[#10150f]">1. Thời hạn đổi trả</h4>
+              <p>Hỗ trợ đổi trả trong vòng 7 ngày kể từ ngày nhận hàng đối với sản phẩm mua.</p>
+              <h4 className="font-bold text-[#10150f] mt-2">2. Điều kiện đổi trả</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Sản phẩm còn nguyên tem mác, chưa qua sử dụng hoặc giặt ủi.</li>
+                <li>Không bị dơ bẩn, trầy xước, hoặc hư hỏng do tác nhân bên ngoài.</li>
+              </ul>
+              <h4 className="font-bold text-[#10150f] mt-2">3. Hình thức hỗ trợ</h4>
+              <p>Miễn phí đổi size/màu nếu shop còn sẵn hàng. Hoàn tiền 100% qua phương thức thanh toán ban đầu nếu sản phẩm có lỗi từ nhà sản xuất.</p>
+              <h4 className="font-bold text-[#10150f] mt-2">4. Quy trình xử lý</h4>
+              <p>Khách hàng đóng gói sản phẩm cẩn thận, liên hệ với bộ phận CSKH để xác nhận tình trạng. Phí vận chuyển trả hàng sẽ được hỗ trợ 1 chiều đối với các trường hợp đổi size hoặc lỗi sản xuất.</p>
             </>
           )}
         </div>

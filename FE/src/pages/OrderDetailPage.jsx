@@ -150,7 +150,15 @@ export default function OrderDetailPage() {
   }
 
   const canCancel = ['PendingPayment', 'PendingConfirmation', 'Confirmed', 'Shipping'].includes(String(order?.status || ''))
-  const canReturn = ['Completed'].includes(String(order?.status || ''))
+  const canReturn = useMemo(() => {
+    if (String(order?.status || '') !== 'Completed') return false;
+    if (!order?.history) return true;
+    const completedHistory = order.history.find(h => String(h.status) === 'Completed');
+    if (!completedHistory) return true;
+    const completedDate = new Date(completedHistory.updatedAt || completedHistory.createdAt || order.updatedAt);
+    const diff = (new Date().getTime() - completedDate.getTime()) / (1000 * 3600 * 24);
+    return diff <= 7;
+  }, [order]);
 
   const closeReviewModal = () => {
     setReviewModalOpen(false)
@@ -476,7 +484,7 @@ export default function OrderDetailPage() {
                       onClick={() => setCancelModal({ show: true, isReturn: true, reasonType: 'not_as_expected', reasonText: '' })}
                       className="w-full rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-700 transition hover:bg-orange-100"
                     >
-                      Yêu cầu trả hàng
+                      Đổi/Hoàn trả hàng
                     </button>
                   )}
                 </div>
@@ -514,7 +522,7 @@ export default function OrderDetailPage() {
           <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl">
             <div className="border-b border-slate-100 p-6 text-center">
               <h3 className="text-xl font-bold text-slate-900">
-                {cancelModal.isReturn ? 'Hoàn trả hàng' : 'Hủy đơn hàng'}
+                {cancelModal.isReturn ? 'Đổi/Hoàn trả hàng' : 'Hủy đơn hàng'}
               </h3>
               <p className="mt-2 text-sm text-slate-500">
                 {cancelModal.isReturn

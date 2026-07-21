@@ -26,7 +26,7 @@ import OwnerProductDetailScreen from '../pages/owner/OwnerProductDetailScreen'
 import OwnerProductsScreen from '../pages/owner/OwnerProductsScreen'
 import OwnerCategoriesScreen from '../pages/owner/OwnerCategoriesScreen';
 import OwnerPromotionsScreen from '../pages/owner/OwnerPromotionsScreen';
-import OwnerDamagePoliciesScreen from '../pages/owner/OwnerDamagePoliciesScreen';
+import OwnerDamagePoliciesScreen from '../pages/owner/OwnerPoliciesScreen';
 
 import OwnerStaffScreen from '../pages/owner/OwnerStaffScreen';
 import OwnerUserDetailScreen from '../pages/owner/OwnerUserDetailScreen';

@@ -37,9 +37,7 @@ const navItems = [
   { to: '/owner/rent-orders', label: 'Quản lý đơn thuê', icon: Package },
   { to: '/owner/blogs', label: 'Quản lý blog', icon: MessageSquareText },
   { to: '/owner/reviews', label: 'Quản lý đánh giá', icon: MessageSquareText },
-  { to: '/owner/promotions', labelKey: 'sidebar.vouchers', icon: Megaphone },
-  { to: '/owner/damage-policies', label: 'Chính sách hư hỏng', icon: Settings },
-
+  { to: '/owner/damage-policies', label: 'Chính sách', icon: Settings },
 ]
 
 const pageTitleMap = {
@@ -61,7 +59,7 @@ const pageTitleMap = {
   reports: 'pageTitles.analytics',
   analytics: 'pageTitles.analytics',
   vouchers: 'pageTitles.vouchers',
-  'damage-policies': 'Chính sách hư hỏng',
+  'damage-policies': 'Chính sách',
 }
 
 const colorOptions = [

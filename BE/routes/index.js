@@ -25,6 +25,7 @@ const favoriteRoutes = require('./favorite.routes');
 const paymentRoutes = require('./payment.routes');
 const collectionRoutes = require('./collection.routes');
 const damagePolicyRoutes = require('./damage-policy.routes');
+const returnPolicyRoutes = require('./return-policy.routes');
 
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
@@ -45,6 +46,7 @@ router.use('/favorites', favoriteRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/collections', collectionRoutes);
 router.use('/damage-policies', damagePolicyRoutes);
+router.use('/return-policies', returnPolicyRoutes);
 
 router.use('/vouchers', voucherRoutes);
 
