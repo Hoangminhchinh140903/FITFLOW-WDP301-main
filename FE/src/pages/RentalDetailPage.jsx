@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import {
@@ -12,7 +12,9 @@ import {
   finalizeRentOrderApi,
 } from '../services/rent-order.service'
 import { createDepositPaymentLinkApi, createGuestDepositPaymentLinkApi } from '../services/payment.service'
+import { createReviewApi, updateReviewApi } from '../services/review.service'
 import Header from '../components/common/Header'
+import ReviewForm from '../components/review/ReviewForm'
 
 const statusLabels = {
   Draft: 'Nháp',
@@ -62,6 +64,10 @@ export default function RentalDetailPage() {
   const [error, setError] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
   const [cancelModal, setCancelModal] = useState({ show: false, reasonType: 'not_as_expected', reasonText: '' })
+
+  const [reviewModalOpen, setReviewModalOpen] = useState(false)
+  const [activeReviewItem, setActiveReviewItem] = useState(null)
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
 
   // Pickup form
   const [pickupCollateralType, setPickupCollateralType] = useState('CCCD')
@@ -127,10 +133,53 @@ export default function RentalDetailPage() {
       } else if (err.response?.status === 404) {
         setError('Không tìm thấy đơn thuê')
       } else {
-        setError('Không thể tải chi tiết đơn thuê')
+        setError(err?.response?.data?.message || 'Không thể tải chi tiết đơn thuê.')
       }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const canReviewOrder = useMemo(() => {
+    if (isGuestView) return false
+    return ['Completed', 'Returned'].includes(String(order?.status || ''))
+  }, [isGuestView, order?.status])
+
+  const openReviewModal = (item) => {
+    setActiveReviewItem(item)
+    setReviewModalOpen(true)
+  }
+
+  const closeReviewModal = () => {
+    setReviewModalOpen(false)
+    setActiveReviewItem(null)
+  }
+
+  const handleSubmitReview = async (payload) => {
+    try {
+      setReviewSubmitting(true)
+      if (payload?.reviewId) {
+        await updateReviewApi(payload.reviewId, {
+          rating: payload.rating,
+          comment: payload.comment,
+          images: payload.images,
+        })
+      } else {
+        await createReviewApi({
+          productId: payload.productId,
+          orderId: payload.orderId,
+          rating: payload.rating,
+          comment: payload.comment,
+          images: payload.images,
+        })
+      }
+      alert('Gửi đánh giá thành công')
+      closeReviewModal()
+      await fetchOrderDetail()
+    } catch (submitError) {
+      alert(submitError?.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại')
+    } finally {
+      setReviewSubmitting(false)
     }
   }
 
@@ -441,6 +490,43 @@ export default function RentalDetailPage() {
                           </p>
                         ) : null}
                         <p className="mt-2 text-xs font-medium text-pink-600">Bấm để xem sản phẩm và thuê lại</p>
+
+                        {!isGuestView && (
+                          <div className="mt-2">
+                            {item.review?.isReviewed ? (
+                              <>
+                                <span className="mr-2 inline-block rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+                                  Đã đánh giá
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault()
+                                    openReviewModal(item)
+                                  }}
+                                  className="mt-2 inline-block rounded-full border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+                                >
+                                  Xem đánh giá
+                                </button>
+                              </>
+                            ) : canReviewOrder ? (
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.preventDefault()
+                                  openReviewModal(item)
+                                }}
+                                className="mt-2 inline-block rounded-full bg-slate-900 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-800"
+                              >
+                                Đánh giá sản phẩm
+                              </button>
+                            ) : (
+                              <span className="text-xs text-slate-500">
+                                Chỉ có thể đánh giá sau khi đơn hàng đã hoàn tất
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-pink-600">
@@ -835,6 +921,23 @@ export default function RentalDetailPage() {
           </div>
         </div>
       )}
+      {/* Review Form */}
+      {!isGuestView ? (
+        <ReviewForm
+          open={reviewModalOpen}
+          onClose={closeReviewModal}
+          product={activeReviewItem?.productInstanceId?.productId}
+          orderId={order?._id}
+          initialReview={activeReviewItem?.review?.isReviewed ? {
+            _id: activeReviewItem.review.reviewId,
+            rating: activeReviewItem.review.rating,
+            comment: activeReviewItem.review.comment,
+            images: activeReviewItem.review.images,
+          } : null}
+          submitting={reviewSubmitting}
+          onSubmit={handleSubmitReview}
+        />
+      ) : null}
     </div>
   )
 }

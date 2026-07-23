@@ -907,6 +907,8 @@ export default function ProductDetailPage() {
                 <ProductInfo
                   name={product.name}
                   category={product.category}
+                  averageRating={product.averageRating}
+                  reviewCount={product.reviewCount}
                   badges={badges}
                   isRentable={isRentableItem}
                   rentPriceText={formatCurrency(currentRentPrice, lang)}
@@ -923,6 +925,9 @@ export default function ProductDetailPage() {
                       onSizeChange={setSelectedSize}
                       isSizeDisabled={(size) => !isSizeAvailable(size) || (selectedColor ? !isVariantAvailable(size, selectedColor) : false)}
                       isFreeSize={isFreeSize}
+                      category={product.category}
+                      categoryPath={product.categoryPath}
+                      productName={product.name}
                     />
                   }
                   actionsContent={

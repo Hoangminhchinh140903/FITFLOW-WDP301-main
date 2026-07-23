@@ -68,7 +68,7 @@ export const getConditionClass = (score) => {
   return 'bg-amber-100 text-amber-700'
 }
 
-export const normalizeSizeStock = (product, toArray) => {
+export const normalizeSizeStock = (product) => {
   const rows = Array.isArray(product?.sizeStock) ? product.sizeStock : []
   const normalizedRows = rows
     .map((row) => ({

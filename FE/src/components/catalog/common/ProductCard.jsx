@@ -1,4 +1,4 @@
-import { Heart, Eye, Loader2 } from 'lucide-react';
+import { Heart, Eye, Loader2, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatVND } from '../../../pages/public/catalogHelpers';
 
@@ -127,6 +127,15 @@ export default function ProductCard({
         <h3 style={{ margin: 0, fontWeight: 900, fontSize: '15px', lineHeight: 1.3, color: '#10150f', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {product?.name || 'Sản phẩm'}
         </h3>
+
+        {/* Rating */}
+        {product?.reviewCount > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Star style={{ width: 14, height: 14, fill: '#ffc107', color: '#ffc107' }} />
+            <span style={{ fontSize: '12px', fontWeight: 900, color: '#10150f' }}>{product.averageRating?.toFixed(1) || '0.0'}</span>
+            <span style={{ fontSize: '11px', fontWeight: 700, color: '#8d9788' }}>({product.reviewCount})</span>
+          </div>
+        )}
 
         {/* Price */}
         <div>

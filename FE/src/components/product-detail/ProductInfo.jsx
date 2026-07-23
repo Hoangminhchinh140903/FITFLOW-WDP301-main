@@ -1,8 +1,12 @@
+import { Star } from 'lucide-react';
+
 export default function ProductInfo({
   name,
   rentPriceText,
   salePriceText,
   isRentable = true,
+  averageRating = 0,
+  reviewCount = 0,
   variantContent,
   actionsContent,
 }) {
@@ -19,6 +23,14 @@ export default function ProductInfo({
           {name || "Sản phẩm"}
         </h1>
         <p className="text-xs font-bold uppercase tracking-wider text-[#8d9788]">Bởi Fitflow Collection</p>
+
+        {reviewCount > 0 && (
+          <div className="flex items-center gap-1.5 mt-2">
+            <Star className="w-4 h-4 fill-[#ffc107] text-[#ffc107]" />
+            <span className="text-sm font-black text-[#10150f]">{averageRating?.toFixed(1) || '0.0'}</span>
+            <span className="text-xs font-bold text-[#8d9788]">({reviewCount} đánh giá)</span>
+          </div>
+        )}
       </div>
 
       <div className="rounded-2xl border border-[rgba(16,21,15,0.1)] bg-white/50 p-4">

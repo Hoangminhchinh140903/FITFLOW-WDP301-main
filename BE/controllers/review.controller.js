@@ -267,6 +267,7 @@ exports.canReview = async (req, res) => {
       });
     }
 
+    // Just check if there is an existing review for this user and product
     try {
       await validateOrderForReview(userId, orderId, productId);
       return res.json({

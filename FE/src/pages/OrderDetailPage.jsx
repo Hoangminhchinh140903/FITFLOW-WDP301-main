@@ -355,7 +355,7 @@ export default function OrderDetailPage() {
                                       event.preventDefault()
                                       openReviewModal(item)
                                     }}
-                                    className="rounded-full border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+                                    className="mt-2 inline-block rounded-full border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
                                   >
                                     Xem đánh giá
                                   </button>
@@ -367,7 +367,7 @@ export default function OrderDetailPage() {
                                     event.preventDefault()
                                     openReviewModal(item)
                                   }}
-                                  className="rounded-full border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+                                  className="mt-2 inline-block rounded-full bg-slate-900 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-800"
                                 >
                                   Đánh giá sản phẩm
                                 </button>
