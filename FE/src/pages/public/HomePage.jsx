@@ -614,13 +614,9 @@ const Homepage = ({ initialSection = "" }) => {
     return "Other";
   };
 
-  const navigateToBuyCategory = (categoryValue, categoryType = "sale_or_rent") => {
+  const navigateToBuyCategory = (categoryValue) => {
     const value = String(categoryValue || "").trim();
-    const normalizedType = String(categoryType || "").trim().toLowerCase();
-    const purpose =
-      normalizedType === "rent" || normalizedType === "service"
-        ? "rent"
-        : "buy";
+    const purpose = "buy";
 
     if (!value) {
       navigate(`/buy?purpose=${purpose}`);
