@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, Navigate } from 'react-router-dom';
 import { useTranslate } from '../../hooks/useTranslate';
 import StaffLayout from './StaffLayout';
 import StaffDashboard from './StaffDashboard';
@@ -34,6 +34,14 @@ const StaffPage = () => {
 
     if (subPath === 'orders') {
       return <StaffOrdersPage />;
+    }
+
+    if (subPath === 'rent-orders') {
+      return <Navigate to="/staff/orders?tab=rent" replace />;
+    }
+
+    if (subPath === 'sale-orders') {
+      return <Navigate to="/staff/orders?tab=sale" replace />;
     }
 
     if (subPath === 'walk-in') {
