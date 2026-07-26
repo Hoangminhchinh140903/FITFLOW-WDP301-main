@@ -28,7 +28,7 @@ const {
     verifyGuestOrderViewToken,
     extractBearerToken,
 } = require('../utils/jwt');
-const { frontendUrl } = require('../config/app.config');
+const { frontendUrl, depositRatio } = require('../config/app.config');
 const { sendRentOrderConfirmationEmail, sendRentOrderCancelEmail } = require('../services/mailService');
 const {
     isValidEmail,
@@ -51,6 +51,35 @@ const {
     buildVoucherSnapshot,
     repairVoucherUsageCounterIfNeeded,
 } = require('../services/voucher.service');
+
+const normalizeTextLocal = (value) =>
+    String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+        
+const hasAnyKeywordLocal = (value, keywords) =>
+    keywords.some((keyword) => value.includes(keyword));
+
+const isRacketLocal = (product) => {
+    if (!product) return false;
+    const haystack = `${product.name || ""} ${product.category || ""}`;
+    const normalized = normalizeTextLocal(haystack);
+    return hasAnyKeywordLocal(normalized, ["vot", "vọt", "vợt", "racket", "tennis", "pickleball"]);
+};
+
+const computeDynamicDeposit = (resolvedItems) => {
+    let deposit = 0;
+    resolvedItems.forEach(item => {
+        const product = item.instance.productId;
+        if (isRacketLocal(product)) {
+            deposit += (item.instance.currentSalePrice || 0) * depositRatio;
+        } else {
+            deposit += (item.instance.currentRentPrice || 0) * depositRatio;
+        }
+    });
+    return Math.round(deposit);
+};
 const { ORDER_TYPE } = require('../constants/order.constants');
 const { RENT_ORDER_STATUS } = require('../constants/status.constants');
 
@@ -839,8 +868,8 @@ const resolveRentInstances = async (items, defaultStart, defaultEnd, session, us
 
         if (item.productInstanceId) {
             const inst = useTransaction
-                ? await ProductInstance.findById(item.productInstanceId).session(session)
-                : await ProductInstance.findById(item.productInstanceId);
+                ? await ProductInstance.findById(item.productInstanceId).populate('productId').session(session)
+                : await ProductInstance.findById(item.productInstanceId).populate('productId');
 
             // Đảm bảo instance khớp đúng size khách chọn, tránh gán nhầm size khác.
             if (inst && hasExplicitSize && String(inst.size || '').trim() !== sizeLabel) {
@@ -866,7 +895,7 @@ const resolveRentInstances = async (items, defaultStart, defaultEnd, session, us
                 candidateFilter.size = { $in: ['FREE SIZE', 'free size', '', null] };
             }
 
-            const candidatesQuery = ProductInstance.find(candidateFilter).sort({ conditionScore: 1 });
+            const candidatesQuery = ProductInstance.find(candidateFilter).sort({ conditionScore: 1 }).populate('productId');
             const candidates = useTransaction ? await candidatesQuery.session(session) : await candidatesQuery;
             for (const cand of candidates) {
                 if (await isInstanceRentable(cand)) {
@@ -964,7 +993,7 @@ exports.createRentOrder = async (req, res) => {
         const resolvedItems = await resolveRentInstances(items, rentStartDate, rentEndDate, session, useTransaction);
 
         const computedTotalAmount = resolvedItems.reduce(
-            (sum, item) => sum + Number(item.source.finalPrice || item.source.baseRentPrice || item.instance.currentRentPrice || 0),
+            (sum, item) => sum + Number(item.instance.currentRentPrice || 0),
             0
         );
         const voucherApplication = await applyVoucherForRentOrder({
@@ -983,7 +1012,7 @@ exports.createRentOrder = async (req, res) => {
         }
 
         const orderTotalAmount = Number(voucherApplication.finalSubtotal || 0);
-        const depositAmount = computeExpectedDeposit({ totalAmount: orderTotalAmount });
+        const depositAmount = computeDynamicDeposit(resolvedItems);
         const remainingAmount = Math.max(orderTotalAmount - depositAmount, 0);
 
         const [rentOrder] = await RentOrder.create([{
@@ -1013,8 +1042,8 @@ exports.createRentOrder = async (req, res) => {
             resolvedItems.map((item) => ({
                 orderId: rentOrder._id,
                 productInstanceId: item.instance._id,
-                baseRentPrice: item.source.baseRentPrice || item.instance.currentRentPrice,
-                finalPrice: item.source.finalPrice || item.instance.currentRentPrice,
+                baseRentPrice: item.instance.currentRentPrice,
+                finalPrice: item.instance.currentRentPrice,
                 rentStartDate: item.rentStartDate || item.source.rentStartDate || rentStartDate,
                 rentEndDate: item.rentEndDate || item.source.rentEndDate || rentEndDate,
                 condition: item.instance.conditionLevel,
@@ -1028,16 +1057,21 @@ exports.createRentOrder = async (req, res) => {
         );
 
         if (voucherApplication.voucher?._id) {
-            if (useTransaction) {
-                await Voucher.findByIdAndUpdate(
-                    voucherApplication.voucher._id,
-                    { $inc: { usedCount: 1 } },
-                    { session }
-                );
-            } else {
-                await Voucher.findByIdAndUpdate(voucherApplication.voucher._id, {
-                    $inc: { usedCount: 1 },
-                });
+            const voucherQuery = {
+                _id: voucherApplication.voucher._id,
+                $or: [
+                    { usageLimitTotal: null },
+                    { usageLimitTotal: { $exists: false } },
+                    { $expr: { $lt: ["$usedCount", "$usageLimitTotal"] } }
+                ]
+            };
+            const updateResult = await Voucher.findOneAndUpdate(
+                voucherQuery,
+                { $inc: { usedCount: 1 } },
+                useTransaction ? { session, new: true } : { new: true }
+            );
+            if (!updateResult) {
+                throw new Error('Voucher đã hết lượt sử dụng trong lúc tạo đơn.');
             }
         }
 
@@ -2552,7 +2586,7 @@ exports.createGuestRentOrder = async (req, res) => {
         }
 
         const orderTotalAmount = Number(voucherApplication.finalSubtotal || 0);
-        const depositAmount = computeExpectedDeposit({ totalAmount: orderTotalAmount });
+        const depositAmount = computeDynamicDeposit(resolvedItems);
         const remainingAmount = Math.max(orderTotalAmount - depositAmount, 0);
 
         const [rentOrder] = await RentOrder.create([{
@@ -2604,16 +2638,21 @@ exports.createGuestRentOrder = async (req, res) => {
         );
 
         if (voucherApplication.voucher?._id) {
-            if (useTransaction) {
-                await Voucher.findByIdAndUpdate(
-                    voucherApplication.voucher._id,
-                    { $inc: { usedCount: 1 } },
-                    { session }
-                );
-            } else {
-                await Voucher.findByIdAndUpdate(voucherApplication.voucher._id, {
-                    $inc: { usedCount: 1 },
-                });
+            const voucherQuery = {
+                _id: voucherApplication.voucher._id,
+                $or: [
+                    { usageLimitTotal: null },
+                    { usageLimitTotal: { $exists: false } },
+                    { $expr: { $lt: ["$usedCount", "$usageLimitTotal"] } }
+                ]
+            };
+            const updateResult = await Voucher.findOneAndUpdate(
+                voucherQuery,
+                { $inc: { usedCount: 1 } },
+                useTransaction ? { session, new: true } : { new: true }
+            );
+            if (!updateResult) {
+                throw new Error('Voucher đã hết lượt sử dụng trong lúc tạo đơn.');
             }
         }
 
@@ -2688,8 +2727,14 @@ exports.getGuestRentOrder = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Không tìm thấy đơn thuê.' });
         }
 
-        const contactEmail = normalizeEmail(order.guestContact?.email || '');
-        // Fallback: nếu đơn không có guestContact (đơn member) thì từ chối lookup guest.
+        let contactEmail = normalizeEmail(order.guestContact?.email || '');
+        if (!contactEmail && order.customerId) {
+            const customer = await User.findById(order.customerId).lean();
+            if (customer) {
+                contactEmail = normalizeEmail(customer.email || '');
+            }
+        }
+
         if (!contactEmail || contactEmail !== email) {
             return res.status(403).json({ success: false, message: 'Email không khớp với đơn thuê.' });
         }

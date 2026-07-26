@@ -47,7 +47,7 @@ export default function CategoryDrawerForm({
               value={form.name}
               onChange={(event) => onChangeName?.(event.target.value)}
               className="h-10 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none ring-emerald-200 focus:ring"
-              placeholder="Ví dụ: Đồ thể thao cưới"
+              placeholder="Ví dụ: Đồ thể thao"
             />
           </div>
 

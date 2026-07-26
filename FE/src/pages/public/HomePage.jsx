@@ -650,25 +650,7 @@ const Homepage = ({ initialSection = "" }) => {
     return hasAnyKeyword(normalized, ["vot", "vọt", "vợt", "racket", "tennis", "pickleball"]);
   };
 
-  const isTraditionalCostume = (item) => {
-    const haystack = `${item?.name || ""} ${item?.category || ""}`;
-    const normalized = normalizeText(haystack);
-    return hasAnyKeyword(normalized, [
-      "co phuc",
-      "viet phuc",
-      "nhat binh",
-      "ao tac",
-      "ao dai",
-      "truyen thong",
-      "gam",
-    ]);
-  };
 
-  const isDressRental = (item) => {
-    const haystack = `${item?.name || ""} ${item?.category || ""}`;
-    const normalized = normalizeText(haystack);
-    return hasAnyKeyword(normalized, ["vay", "dam", "dress", "gown"]);
-  };
 
   const getLikeCount = (item) => {
     const directValue = Number(
@@ -737,19 +719,16 @@ const Homepage = ({ initialSection = "" }) => {
       const apparelKeywords = ['apparel', 'accessories', 'clothes', 'shoes', 'áo', 'quần', 'phụ kiện', 'giày', 'vớ', 'tất', 'túi', 'balo', 'bag', 'trang phục'];
       return !apparelKeywords.some(kw => categoryMatch.includes(kw));
     });
-  const traditionalCandidates = rentableWithImage.filter((item) => isTraditionalCostume(item));
-  const displayedBuyProducts = (traditionalCandidates.length > 0 ? traditionalCandidates : rentableWithImage)
+  const displayedBuyProducts = rentableWithImage
     .slice(0, HOMEPAGE_PRODUCT_LIMIT)
     .map(mapProductCard);
 
   const fittingWithImage = fittingProducts
     .filter((item) => hasRealImage(item.imageUrl))
     .filter((item) => Number(item.baseRentPrice || 0) > 0);
-  const dressCandidates = fittingWithImage.filter((item) => isDressRental(item));
-  const dressFallback = fittingWithImage.filter(
+  const displayedFittingProducts = fittingWithImage.filter(
     (item) => !displayedBuyProducts.some((chosen) => chosen.id === item._id)
-  );
-  const displayedFittingProducts = (dressCandidates.length > 0 ? dressCandidates : dressFallback)
+  )
     .slice(0, HOMEPAGE_PRODUCT_LIMIT)
     .map(mapProductCard);
 
@@ -1600,9 +1579,9 @@ const Homepage = ({ initialSection = "" }) => {
         <div className="container">
           <div className="row-head fitting-head">
             <h2>
-              {lang === "vi" ? "Vợt & dụng cụ cho thuê" : "Dress Rentals"}
+              {lang === "vi" ? "Vợt & dụng cụ cho thuê" : "Rackets & Equipment for Rent"}
             </h2>
-            <Link to="/buy?purpose=rent&q=vay">
+            <Link to="/buy?purpose=rent">
               {lang === "vi" ? "Xem đồ thuê" : "View rentals"}
             </Link>
           </div>

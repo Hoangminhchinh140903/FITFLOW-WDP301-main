@@ -1252,19 +1252,22 @@ exports.checkPaypalStatus = async (req, res) => {
 };
 
 /**
- * POST /api/payments/paypal/cancel
- * FE gọi khi PayPal redirect về với status=cancelled để rollback dữ liệu kịp thời.
+ * POST /api/payments/cancel
+ * FE gọi khi thanh toán bị hủy để rollback dữ liệu kịp thời.
  */
-exports.handlePaypalCancel = async (req, res) => {
+exports.handlePaymentCancel = async (req, res) => {
     try {
         const purpose = String(req.body?.purpose || '').trim().toLowerCase();
         const saleOrderId = String(req.body?.saleOrderId || '').trim();
         const orderId = String(req.body?.orderId || '').trim();
+        const provider = String(req.body?.provider || '').trim().toUpperCase();
+        
+        const actualProvider = provider === 'PAYPAL' ? PAYMENT_PROVIDER.PAYPAL : PAYMENT_PROVIDER.PAYOS;
 
         if (purpose === 'sale' && saleOrderId) {
-            await markSaleOrderAsFailed(saleOrderId, 'khách hủy thanh toán PayPal');
+            await markSaleOrderAsFailed(saleOrderId, `khách hủy thanh toán ${actualProvider}`);
             await PayOSTransaction.updateMany(
-                { provider: PAYMENT_PROVIDER.PAYPAL, orderId: saleOrderId, purpose: 'SalePayment', status: 'PENDING' },
+                { provider: actualProvider, orderId: saleOrderId, purpose: 'SalePayment', status: 'PENDING' },
                 { status: 'CANCELLED' }
             );
             return res.json({ success: true, data: { status: 'CANCELLED', purpose: 'sale' } });
@@ -1273,16 +1276,16 @@ exports.handlePaypalCancel = async (req, res) => {
         if (purpose === 'deposit' && orderId) {
             await releaseReservedInstancesForPendingDepositOrder(orderId);
             await PayOSTransaction.updateMany(
-                { provider: PAYMENT_PROVIDER.PAYPAL, orderId, purpose: 'Deposit', status: 'PENDING' },
+                { provider: actualProvider, orderId, purpose: 'Deposit', status: 'PENDING' },
                 { status: 'CANCELLED' }
             );
             return res.json({ success: true, data: { status: 'CANCELLED', purpose: 'deposit' } });
         }
 
-        return res.status(400).json({ success: false, message: 'Thiếu thông tin hủy giao dịch PayPal.' });
+        return res.status(400).json({ success: false, message: 'Thiếu thông tin hủy giao dịch.' });
     } catch (err) {
-        console.error('handlePaypalCancel error:', err);
-        return res.status(500).json({ success: false, message: 'Không thể xử lý hủy PayPal', detail: err.message });
+        console.error('handlePaymentCancel error:', err);
+        return res.status(500).json({ success: false, message: 'Không thể xử lý hủy thanh toán', detail: err.message });
     }
 };
 

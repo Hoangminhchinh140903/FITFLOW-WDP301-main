@@ -13,7 +13,7 @@ const AUTO_PENALTY_LATE_DAYS = autoPenaltyLateDays;
 
 const roundCurrency = (value) => Math.round(Number(value || 0) * 100) / 100;
 
-const computeExpectedDeposit = (order) => roundCurrency(Number(order?.totalAmount || 0) * depositRatio);
+const computeExpectedDeposit = (order) => roundCurrency(Number(order?.depositAmount || 0));
 
 // Vietnam timezone offset: UTC+7
 const VN_TZ_OFFSET_MS = 7 * 60 * 60 * 1000;

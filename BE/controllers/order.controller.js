@@ -167,17 +167,26 @@ const mapSaleOrderForOwner = (order, options = {}) => {
   };
 };
 
-const buildNormalizedSaleItems = (items = [], productMap = new Map()) => {
-  return items.map((item) => {
+const buildNormalizedSaleItems = async (items = [], productMap = new Map()) => {
+  const result = [];
+  for (const item of items) {
     const product = productMap.get(String(item.productId));
     const quantity = Math.max(Number(item.quantity || 1), 1);
-    const unitPrice = Number(item.salePrice || product?.baseSalePrice || 0);
+    
+    let unitPrice = Number(product?.baseSalePrice || 0);
+    
+    if (item.productInstanceId) {
+      const instance = await ProductInstance.findById(item.productInstanceId).lean();
+      if (instance && instance.currentSalePrice != null) {
+        unitPrice = Number(instance.currentSalePrice);
+      }
+    }
 
     if (!product || !Number.isFinite(unitPrice) || unitPrice < 0) {
       throw new Error('INVALID_PRODUCT_DATA');
     }
 
-    return {
+    result.push({
       productId: product._id,
       quantity,
       size: String(item.size || 'FREE SIZE').trim() || 'FREE SIZE',
@@ -186,8 +195,9 @@ const buildNormalizedSaleItems = (items = [], productMap = new Map()) => {
       unitPrice,
       conditionLevel: item.conditionLevel === 'Used' ? 'Used' : 'New',
       productInstanceId: item?.productInstanceId || null,
-    };
-  });
+    });
+  }
+  return result;
 };
 
 // CHANGED: Validate products against unique product ids, because checkout items can repeat
@@ -525,9 +535,21 @@ const runSaleCheckoutTransaction = async ({
       await assignSaleInstances(normalizedItems, saleOrder._id);
 
       if (voucherId) {
-        await Voucher.findByIdAndUpdate(voucherId, {
-          $inc: { usedCount: 1 },
-        });
+        const updateResult = await Voucher.findOneAndUpdate(
+            {
+                _id: voucherId,
+                $or: [
+                    { usageLimitTotal: null },
+                    { usageLimitTotal: { $exists: false } },
+                    { $expr: { $lt: ["$usedCount", "$usageLimitTotal"] } }
+                ]
+            },
+            { $inc: { usedCount: 1 } },
+            { new: true }
+        );
+        if (!updateResult) {
+            throw new Error('Voucher đã hết lượt sử dụng trong lúc tạo đơn.');
+        }
       }
 
       return saleOrder;
@@ -556,11 +578,21 @@ const runSaleCheckoutTransaction = async ({
     await assignSaleInstances(normalizedItems, saleOrder._id, session);
 
     if (voucherId) {
-      await Voucher.findByIdAndUpdate(
-        voucherId,
+      const updateResult = await Voucher.findOneAndUpdate(
+        {
+            _id: voucherId,
+            $or: [
+                { usageLimitTotal: null },
+                { usageLimitTotal: { $exists: false } },
+                { $expr: { $lt: ["$usedCount", "$usageLimitTotal"] } }
+            ]
+        },
         { $inc: { usedCount: 1 } },
-        { session }
+        { session, new: true }
       );
+      if (!updateResult) {
+          throw new Error('Voucher đã hết lượt sử dụng trong lúc tạo đơn.');
+      }
     }
 
     await session.commitTransaction();
@@ -945,7 +977,7 @@ exports.guestCheckout = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Có sản phẩm không hợp lệ hoặc đã ngừng bán.' });
     }
 
-    const normalizedItems = buildNormalizedSaleItems(items, productMap);
+    const normalizedItems = await buildNormalizedSaleItems(items, productMap);
     await ensureSaleStockAvailable(normalizedItems);
 
     const subtotal = normalizedItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
@@ -1185,7 +1217,7 @@ exports.checkout = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Có sản phẩm không hợp lệ hoặc đã ngừng bán.' });
     }
 
-    const normalizedItems = buildNormalizedSaleItems(items, productMap);
+    const normalizedItems = await buildNormalizedSaleItems(items, productMap);
     await ensureSaleStockAvailable(normalizedItems);
     const subtotal = normalizedItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
     const voucherApplication = await applyVoucherForSaleOrder({
@@ -1678,7 +1710,9 @@ exports.updateOwnerSaleOrderStatus = async (req, res) => {
       order.history.push({
         status: normalizedStatus,
         action: actorRole === 'staff' ? 'staff_update_status' : 'owner_update_status',
-        description: `Cập nhật trạng thái sang ${statusLabel}`,
+        description: normalizedStatus === 'Cancelled' && req.body.reason 
+          ? `Đơn hàng đã bị hủy. Lý do: ${req.body.reason}` 
+          : `Đơn hàng đã được chuyển sang trạng thái: ${statusLabel}`,
         updatedBy: req.user?.id || null,
         updatedAt: new Date(),
       });
@@ -1897,7 +1931,7 @@ exports.cancelGuestSaleOrder = async (req, res) => {
     order.history.push({
       status: 'Cancelled',
       action: 'guest_cancel',
-      description: 'Khách hàng (Guest) đã hủy đơn',
+      description: reason ? `Khách hàng đã hủy đơn. Lý do: ${reason}` : 'Khách hàng đã hủy đơn',
       updatedBy: null,
       updatedAt: new Date(),
     });
@@ -1982,7 +2016,7 @@ exports.cancelMySaleOrder = async (req, res) => {
   try {
     const { id } = req.params;
     const { reason } = req.body;
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     const order = await SaleOrder.findOne({ _id: id, customerId: userId });
     if (!order) return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
@@ -1999,7 +2033,7 @@ exports.cancelMySaleOrder = async (req, res) => {
     order.history.push({
       status: 'Cancelled',
       action: 'customer_cancel',
-      description: 'Khách hàng (Thành viên) đã hủy đơn',
+      description: reason ? `Khách hàng đã hủy đơn. Lý do: ${reason}` : 'Khách hàng đã hủy đơn',
       updatedBy: userId,
       updatedAt: new Date(),
     });
@@ -2018,7 +2052,7 @@ exports.returnMySaleOrder = async (req, res) => {
   try {
     const { id } = req.params;
     const { reason } = req.body;
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     const order = await SaleOrder.findOne({ _id: id, customerId: userId });
     if (!order) return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });

@@ -64,20 +64,34 @@ const getCustomerText = (order) => {
   return 'N/A'
 }
 
-const getCustomerDetail = (customer) => {
-  if (!customer) return null
-  if (typeof customer !== 'object') {
-    return { id: String(customer || '') }
+const getCustomerDetail = (order) => {
+  if (!order) return null
+  const customer = order.customerId
+  let detail = { id: '', name: '', phone: '', email: '', address: '', gender: '', dateOfBirth: null }
+  
+  if (customer && typeof customer === 'object') {
+    detail = {
+      id: customer._id || '',
+      name: customer.name || '',
+      phone: customer.phone || '',
+      email: customer.email || '',
+      address: customer.address || '',
+      gender: customer.gender || '',
+      dateOfBirth: customer.dateOfBirth || null,
+    }
+  } else if (typeof customer === 'string') {
+    detail.id = customer
   }
-  return {
-    id: customer._id || '',
-    name: customer.name || '',
-    phone: customer.phone || '',
-    email: customer.email || '',
-    address: customer.address || '',
-    gender: customer.gender || '',
-    dateOfBirth: customer.dateOfBirth || null,
-  }
+  
+  const guest = order.guestContact || {}
+  const customerContact = order.customerContact || {}
+  
+  detail.name = detail.name || customerContact.name || guest.name || ''
+  detail.phone = detail.phone || customerContact.phone || guest.phone || ''
+  detail.email = detail.email || customerContact.email || guest.email || ''
+  detail.address = detail.address || customerContact.address || guest.address || order.shippingAddress || ''
+  
+  return detail
 }
 
 const getGenderLabel = (gender) => {
@@ -139,7 +153,7 @@ export default function StaffRentOrders() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [showCustomerModal, setShowCustomerModal] = useState(false)
 
-  const customerDetail = useMemo(() => getCustomerDetail(selectedOrder?.customerId), [selectedOrder])
+  const customerDetail = useMemo(() => getCustomerDetail(selectedOrder), [selectedOrder])
 
   const showError = (msg) => {
     setError(msg)
@@ -808,7 +822,7 @@ export default function StaffRentOrders() {
                         {displayOrderCode(order)}
                       </p>
                       <p className="mt-3 text-sm font-medium text-slate-700">
-                        Khách hàng: {getCustomerText(order.customerId)}
+                        Khách hàng: {getCustomerText(order)}
                       </p>
                       <p className="mt-1 text-sm text-slate-500">
                         Tạo lúc: {formatDateTime(order.createdAt)}
@@ -1050,8 +1064,8 @@ export default function StaffRentOrders() {
                     </div>
                     {selectedOrder.status !== 'Completed' && (
                       <div className="mt-3 flex justify-between border-t border-slate-200 pt-3 text-sm">
-                        <span className="text-slate-500">Còn lại:</span>
-                        <span className="font-semibold text-slate-900">{formatMoney((selectedOrder.totalAmount || 0) - (selectedOrder.depositAmount || 0))}</span>
+                        <span className="text-slate-500">Tiền dự tính hoàn trả khách:</span>
+                        <span className="font-semibold text-slate-900">{formatMoney((selectedOrder.depositAmount || 0) - (selectedOrder.totalAmount || 0))}</span>
                       </div>
                     )}
                   </div>

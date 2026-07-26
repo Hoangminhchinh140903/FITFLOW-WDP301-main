@@ -13,7 +13,7 @@ import {
   createSalePaymentLinkApi,
   createPaypalDepositOrderApi,
   createPaypalSaleOrderApi,
-  cancelPaypalOrderApi,
+  cancelPaymentApi,
 } from '../services/payment.service'
 import { checkoutApi, guestCheckoutApi } from '../services/order.service'
 import { getMyVouchersApi, validateVoucherApi } from '../services/voucher.service'
@@ -832,7 +832,7 @@ export default function CartPage() {
             } catch (linkErr) {
               // Tạo link thanh toán cọc thất bại → rollback đơn thuê
               if (rentalPaymentMethod === 'PayPal' && createdRentalOrderId) {
-                try { await cancelPaypalOrderApi({ purpose: 'deposit', orderId: createdRentalOrderId }) } catch { /* ignore */ }
+                try { await cancelPaymentApi({ purpose: 'deposit', orderId: createdRentalOrderId, provider: 'paypal' }) } catch { /* ignore */ }
               }
               throw linkErr
             }
@@ -857,7 +857,7 @@ export default function CartPage() {
           } catch (linkErr) {
             // Tạo link thanh toán thất bại → rollback đơn hàng để tránh kẹt PendingPayment
             if (buyForm.paymentMethod === 'PayPal' && saleOrderId) {
-              try { await cancelPaypalOrderApi({ purpose: 'sale', saleOrderId }) } catch { /* ignore */ }
+                try { await cancelPaymentApi({ purpose: 'sale', saleOrderId: saleOrderId, provider: 'paypal' }); } catch { /* ignore */ }
             }
             // Re-throw để catch bên ngoài hiển thị lỗi cho user
             throw linkErr
@@ -1141,6 +1141,23 @@ export default function CartPage() {
                         {guestVerificationSession?.verificationToken
                           ? `Đã xác minh email ${guestVerificationSession?.guestVerification?.email || ''}.`
                           : 'Bạn sẽ cần xác minh email bằng mã OTP trước khi tạo đơn.'}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {isAuthenticated && buyItems.length === 0 ? (
+                    <div className="mt-5 space-y-3 rounded-2xl border border-sky-200 bg-sky-50/50 px-4 py-4">
+                      <div className="flex items-start gap-2 text-sm">
+                        <User className="mt-0.5 h-4 w-4 text-sky-600" />
+                        <div>
+                          <p className="font-semibold text-slate-800">Thông tin khách hàng</p>
+                          <p className="text-xs text-slate-500">Hệ thống sẽ tự động sử dụng thông tin từ tài khoản của bạn để xác nhận đơn thuê.</p>
+                        </div>
+                      </div>
+                      <div className="grid gap-2 text-sm text-slate-700 mt-2 pl-6">
+                        <p><span className="font-medium">Họ tên:</span> {user?.name || 'Chưa cập nhật'}</p>
+                        <p><span className="font-medium">Số điện thoại:</span> {user?.phone || 'Chưa cập nhật'}</p>
+                        <p><span className="font-medium">Email:</span> {user?.email}</p>
                       </div>
                     </div>
                   ) : null}

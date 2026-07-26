@@ -7,7 +7,7 @@ import {
     capturePaypalDepositOrderRequest,
     createPaypalSaleOrderRequest,
     capturePaypalSaleOrderRequest,
-    cancelPaypalOrderRequest,
+    cancelPaymentRequest,
     checkPayosStatusRequest,
     checkPaypalStatusRequest,
 } from '../api/payment.api';
@@ -52,8 +52,8 @@ export const capturePaypalSaleOrderApi = async (orderId, paypalOrderId) => {
     return res.data;
 };
 
-export const cancelPaypalOrderApi = async (payload) => {
-    const res = await cancelPaypalOrderRequest(payload);
+export const cancelPaymentApi = async (payload) => {
+    const res = await cancelPaymentRequest(payload);
     return res.data;
 };
 

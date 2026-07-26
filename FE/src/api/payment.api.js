@@ -25,8 +25,7 @@ export const createPaypalSaleOrderRequest = (orderId) =>
 export const capturePaypalSaleOrderRequest = (orderId, paypalOrderId) =>
     axiosClient.post(`/payments/paypal/sale-order/${orderId}/capture`, { paypalOrderId });
 
-export const cancelPaypalOrderRequest = (payload) =>
-    axiosClient.post('/payments/paypal/cancel', payload);
+export const cancelPaymentRequest = (payload) => axiosClient.post('/payments/cancel', payload);
 
 export const checkPayosStatusRequest = (orderCode) =>
     axiosClient.get(`/payments/payos-status/${orderCode}`);

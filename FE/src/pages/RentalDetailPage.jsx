@@ -4,7 +4,6 @@ import { useAuth } from '../contexts/AuthContext'
 import {
   getRentOrderByIdApi,
   getGuestRentOrderByIdApi,
-  payDepositApi,
   cancelRentOrderApi,
   cancelGuestRentOrderApi,
   confirmPickupApi,
@@ -180,22 +179,6 @@ export default function RentalDetailPage() {
       alert(submitError?.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại')
     } finally {
       setReviewSubmitting(false)
-    }
-  }
-
-  const handlePayDepositCash = async () => {
-    if (!confirm('Xác nhận đặt cọc bằng tiền mặt?')) return
-    setActionLoading(true)
-    try {
-      const response = await payDepositApi(id, { method: 'Cash' })
-      if (response.success) {
-        alert('Đặt cọc thành công!')
-        fetchOrderDetail()
-      }
-    } catch (err) {
-      alert(err.response?.data?.message || 'Có lỗi xảy ra')
-    } finally {
-      setActionLoading(false)
     }
   }
 
@@ -651,15 +634,7 @@ export default function RentalDetailPage() {
                     >
                       {actionLoading ? 'Đang xử lý...' : '📱 Đặt cọc qua QR (PayOS)'}
                     </button>
-                    {!isGuestView && (
-                      <button
-                        onClick={handlePayDepositCash}
-                        disabled={actionLoading}
-                        className="w-full border border-pink-600 text-pink-600 py-3 rounded-lg font-semibold hover:bg-pink-50 disabled:bg-gray-100"
-                      >
-                        {actionLoading ? 'Đang xử lý...' : '💵 Đặt cọc tiền mặt'}
-                      </button>
-                    )}
+                    {/* Removed cash deposit option for customer */}
                   </div>
                 )}
 

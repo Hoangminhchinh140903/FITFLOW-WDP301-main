@@ -53,20 +53,31 @@ const getCustomerText = (order) => {
   return 'N/A'
 }
 
-const getCustomerDetail = (customer) => {
-  if (!customer) return null
-  if (typeof customer !== 'object') {
-    return { id: String(customer || '') }
+const getCustomerDetail = (order) => {
+  if (!order) return null
+  const customer = order.customerId
+  let detail = { id: '', name: '', phone: '', email: '', address: '', gender: '', dateOfBirth: null }
+  
+  if (customer && typeof customer === 'object') {
+    detail = {
+      id: customer._id || '',
+      name: customer.name || '',
+      phone: customer.phone || '',
+      email: customer.email || '',
+      address: customer.address || '',
+      gender: customer.gender || '',
+      dateOfBirth: customer.dateOfBirth || null,
+    }
+  } else if (typeof customer === 'string') {
+    detail.id = customer
   }
-  return {
-    id: customer._id || '',
-    name: customer.name || '',
-    phone: customer.phone || '',
-    email: customer.email || '',
-    address: customer.address || '',
-    gender: customer.gender || '',
-    dateOfBirth: customer.dateOfBirth || null,
-  }
+  
+  detail.name = detail.name || order.shippingName || order.guestName || ''
+  detail.phone = detail.phone || order.shippingPhone || order.guestPhone || ''
+  detail.email = detail.email || order.shippingEmail || order.guestEmail || ''
+  detail.address = detail.address || order.shippingAddress || ''
+  
+  return detail
 }
 
 
@@ -101,7 +112,7 @@ export default function StaffSaleOrders() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [showCustomerModal, setShowCustomerModal] = useState(false)
 
-  const customerDetail = useMemo(() => getCustomerDetail(selectedOrder?.customerId), [selectedOrder])
+  const customerDetail = useMemo(() => getCustomerDetail(selectedOrder), [selectedOrder])
 
   const showSuccess = (msg) => {
     setActionSuccess(msg)
@@ -447,7 +458,7 @@ export default function StaffSaleOrders() {
                               </div>
                             </div>
                             <div className="shrink-0 text-right">
-                              <p className="text-sm font-semibold text-indigo-600">{formatMoney(item.price || 0)}</p>
+                              <p className="text-sm font-semibold text-indigo-600">{formatMoney(item.unitPrice || item.price || 0)}</p>
                             </div>
                           </div>
                         )

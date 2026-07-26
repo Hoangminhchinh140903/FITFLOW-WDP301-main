@@ -4,7 +4,7 @@ import {
     checkPayosStatusApi,
     capturePaypalDepositOrderApi,
     capturePaypalSaleOrderApi,
-    cancelPaypalOrderApi,
+    cancelPaymentApi,
 } from '../services/payment.service'
 import { useAuth } from '../hooks/useAuth'
 import { useBuyCart } from '../contexts/BuyCartContext'
@@ -36,12 +36,8 @@ export default function PaymentResultPage() {
 
     useEffect(() => {
         if (urlStatus?.toLowerCase() === 'cancelled') {
-            // Nếu cancel từ PayPal (provider=paypal) → cần notify backend để rollback
-            if (provider === 'paypal') {
-                notifyPaypalCancel()
-            } else {
-                setState('cancelled')
-            }
+            // Cancel từ PayPal hoặc PayOS → cần notify backend để rollback
+            notifyPaymentCancel()
             return
         }
         if (provider === 'paypal') {
@@ -55,12 +51,12 @@ export default function PaymentResultPage() {
         pollStatus()
     }, [])
 
-    const notifyPaypalCancel = async () => {
+    const notifyPaymentCancel = async () => {
         try {
             if (purpose === 'sale' && saleOrderId) {
-                await cancelPaypalOrderApi({ purpose: 'sale', saleOrderId })
+                await cancelPaymentApi({ purpose: 'sale', saleOrderId, provider })
             } else if (purpose === 'deposit' && orderId) {
-                await cancelPaypalOrderApi({ purpose: 'deposit', orderId })
+                await cancelPaymentApi({ purpose: 'deposit', orderId, provider })
             }
         } catch {
             // Không block UI dù backend lỗi — đơn sẽ tự rollback khi FE poll hoặc webhook xử lý

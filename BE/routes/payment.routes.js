@@ -10,7 +10,7 @@ const {
     capturePaypalDepositOrder,
     createPaypalSaleOrder,
     capturePaypalSaleOrder,
-    handlePaypalCancel,
+    handlePaymentCancel,
     checkPayosStatus,
     checkPaypalStatus,
     handleWebhook,
@@ -42,6 +42,6 @@ router.post('/sale-order/:orderId', createSalePaymentLink);
 // PayPal sandbox: tạo/capture đơn mua (guest + member)
 router.post('/paypal/sale-order/:orderId/create-order', createPaypalSaleOrder);
 router.post('/paypal/sale-order/:orderId/capture', capturePaypalSaleOrder);
-router.post('/paypal/cancel', handlePaypalCancel);
+router.post('/cancel', handlePaymentCancel);
 
 module.exports = router;

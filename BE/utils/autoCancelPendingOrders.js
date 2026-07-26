@@ -68,7 +68,7 @@ const detectTransactionSupport = async () => {
   return cachedTransactionSupport;
 };
 
-const cancelOrder = async (order) => {
+const cancelOrder = async (order, targetStatus = 'Cancelled') => {
   const orderId = order._id;
   const supportsTransaction = await detectTransactionSupport();
 
@@ -76,7 +76,7 @@ const cancelOrder = async (order) => {
     const items = await RentOrderItem.find({ orderId }).lean();
     const instanceIds = items.map((i) => i.productInstanceId).filter(Boolean);
 
-    order.status = 'Cancelled';
+    order.status = targetStatus;
     await order.save();
 
     if (instanceIds.length > 0) {
@@ -106,7 +106,7 @@ const cancelOrder = async (order) => {
     const items = await RentOrderItem.find({ orderId }).session(session).lean();
     const instanceIds = items.map((i) => i.productInstanceId).filter(Boolean);
 
-    order.status = 'Cancelled';
+    order.status = targetStatus;
     await order.save({ session });
 
     if (instanceIds.length > 0) {
@@ -153,9 +153,31 @@ const runAutoCancel = async () => {
   }
 };
 
+const runAutoNoShow = async () => {
+  const threshold = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours past rentStartDate
+  const orders = await RentOrder.find({
+    status: 'WaitingPickup',
+    rentStartDate: { $lte: threshold }
+  });
+
+  if (!orders || orders.length === 0) return;
+
+  for (const order of orders) {
+    try {
+      await cancelOrder(order, 'NoShow');
+    } catch (error) {
+      console.error('Auto-noshow order failed:', order._id, error.message);
+    }
+  }
+};
+
 const startAutoCancelJob = () => {
   runAutoCancel().catch((err) => console.error('Auto-cancel initial run error:', err.message));
-  setInterval(() => runAutoCancel().catch((err) => console.error('Auto-cancel run error:', err.message)), INTERVAL_MS);
+  runAutoNoShow().catch((err) => console.error('Auto-noshow initial run error:', err.message));
+  setInterval(() => {
+    runAutoCancel().catch((err) => console.error('Auto-cancel run error:', err.message));
+    runAutoNoShow().catch((err) => console.error('Auto-noshow run error:', err.message));
+  }, INTERVAL_MS);
 };
 
 module.exports = { startAutoCancelJob };
